@@ -421,7 +421,6 @@ function demo(){
     <select id="edu"><option value="">Select…</option>
       ${[["hs_less","Less than high school"],["hs","High school or equivalent"],["some_college","Some college, no degree"],["assoc","Associate degree"],["ba","Bachelor's degree"],["grad","Graduate or professional degree"],["na","Prefer not to say"]].map(([v,t])=>`<option value="${v}" ${D.education===v?"selected":""}>${t}</option>`).join("")}
     </select>
-    <label class="fl">Have you ever invested money in individual stocks or funds?</label>${pill("invest_exp",[["yes","Yes"],["no","No"],["na","Prefer not to say"]])}
     <div class="err" id="err"></div><div class="btnrow"><button class="primary" id="b">Continue</button></div></div>`;
   document.querySelectorAll(".pills").forEach(g=>g.querySelectorAll(".radio").forEach(lb=>lb.addEventListener("click",()=>{
      g.querySelectorAll(".radio").forEach(x=>x.classList.remove("on")); lb.classList.add("on");
@@ -430,7 +429,7 @@ function demo(){
   document.getElementById("b").onclick=()=>{
     const age=+document.getElementById("age").value; D.education=document.getElementById("edu").value; D.gender_self=document.getElementById("gself").value.slice(0,80);
     if(age>=18 && age<=100) D.age=age;
-    softGo(!!(D.age && D.gender && D.education && D.invest_exp), "Some questions are not answered yet (age must be 18 to 100).");
+    softGo(!!(D.age && D.gender && D.education), "Some questions are not answered yet (age must be 18 to 100).");
   };
 }
 
