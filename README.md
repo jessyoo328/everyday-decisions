@@ -2,7 +2,7 @@
 
 Study page for Study 2 (version s2-1.0.0). Everything is in `index.html`.
 
-- **Live link:** https://jessyoo328.github.io/mu-study2/
+- **Live link:** https://jessyoo328.github.io/everyday-decisions/
 - **Prolific link:** add `?PROLIFIC_PID={{%PROLIFIC_PID%}}&STUDY_ID={{%STUDY_ID%}}&SESSION_ID={{%SESSION_ID%}}`
 - **Test run:** add `?test=1` (rows are saved with `is_test = true`, and timers are skipped)
 
