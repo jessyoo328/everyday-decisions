@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Research Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAE6DD; --card:#FFFDF8; --ink:#17202A; --ink2:#3D4752; --muted:#6B7480; --line:#DDD7CB;
+  --chip:#F1EDE5; --sel:#1F3A5A; --sel-bg:#EEF2F7; --accent:#C9822E; --err:#A23B2A;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+header{height:56px;border-bottom:1px solid var(--line);position:relative}
+header .in{max-width:1180px;margin:0 auto;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+header .brand{font-size:12px;letter-spacing:.14em;font-weight:600;color:var(--ink2)}
+header .sec{font-size:14px;color:var(--ink2)}
+#bar{position:absolute;left:0;bottom:-1px;height:3px;background:var(--ink);width:0;transition:width .3s}
+main{max-width:1180px;margin:0 auto;padding:40px 24px 64px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:32px 36px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.narrow{max-width:760px;margin:0 auto}
+h1{font-size:26px;line-height:1.25;margin:0 0 16px;font-weight:600}
+h2{font-size:21px;line-height:1.35;margin:0 0 18px;font-weight:600}
+p{margin:0 0 14px;color:var(--ink2)}
+.small{font-size:13.5px;color:var(--muted)}
+.btnrow{display:flex;justify-content:flex-end;margin-top:26px;gap:12px}
+button.primary{background:var(--ink);color:#fff;border:0;border-radius:999px;padding:13px 26px;font:600 15px "IBM Plex Sans",sans-serif;cursor:pointer}
+button.primary:disabled{background:#C4C7CB;cursor:not-allowed}
+hr{border:0;border-top:1px solid var(--line);margin:22px 0}
+/* scenario layout */
+.split{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:28px;align-items:start}
+.split.wide{grid-template-columns:minmax(0,.75fr) minmax(0,1.45fr)}
+.split.wide .scn p{font-size:14.5px}
+.scn .tag{display:inline-block;background:var(--chip);border-radius:999px;padding:4px 12px;font-size:13px;color:var(--ink2);margin-bottom:12px}
+.scn h2{margin-bottom:14px}
+.scn p{color:var(--ink);font-size:15.5px}
+.scn .now{background:var(--chip);border-radius:10px;padding:12px 14px;font-weight:500;color:var(--ink);margin-top:6px}
+.qhead{font-size:13.5px;color:var(--muted);margin-bottom:8px}
+.dots{display:flex;gap:5px;margin-bottom:20px}
+.dots span{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.dots span.on{background:var(--ink)}
+.q{font-size:19px;font-weight:600;line-height:1.4;margin:0 0 18px}
+/* grid */
+table.lik{width:100%;border-collapse:collapse;font-size:14.5px}
+table.lik th{font-weight:500;font-size:11.5px;color:var(--muted);text-align:center;padding:0 2px 8px;vertical-align:bottom;line-height:1.25}
+table.lik td{border-top:1px solid var(--line);padding:9px 2px;text-align:center}
+table.lik td.st{text-align:left;padding-right:10px;color:var(--ink);width:44%}
+table.lik input{width:18px;height:18px;accent-color:var(--sel);cursor:pointer}
+table.lik tr.miss td.st{color:var(--err)}
+/* options */
+.opt{display:block;border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;cursor:pointer;background:#fff;transition:border-color .15s}
+.opt:hover{border-color:#B9B2A4}
+.opt.on{border-color:var(--sel);background:var(--sel-bg)}
+.opt input{display:none}
+.opt .lab{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:600;margin-bottom:2px}
+.opt .tx{font-size:15.5px;color:var(--ink)}
+.radio{display:flex;align-items:center;gap:12px;border:1.5px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:10px;cursor:pointer;background:#fff}
+.radio.on{border-color:var(--sel);background:var(--sel-bg)}
+.radio input{accent-color:var(--sel);width:18px;height:18px}
+/* 1-7 buttons */
+.scale{display:flex;gap:8px}
+.scale button{flex:1;height:52px;border:1.5px solid var(--line);border-radius:10px;background:#fff;font:500 16px "IBM Plex Sans";cursor:pointer;color:var(--ink)}
+.scale button.on{border-color:var(--sel);background:var(--sel);color:#fff}
+.ends{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:8px}
+/* slider */
+.slider{position:relative;height:44px;margin:26px 0 4px;cursor:pointer;touch-action:none}
+.slider .track{position:absolute;left:0;right:0;top:19px;height:6px;border-radius:3px;background:#E3DDD0}
+.slider .fill{position:absolute;left:0;top:19px;height:6px;border-radius:3px;background:var(--sel)}
+.slider .knob{position:absolute;top:10px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:var(--sel);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.slider .val{position:absolute;top:-22px;transform:translateX(-50%);font:600 14px "IBM Plex Mono",monospace;color:var(--sel)}
+.hint{font-size:13.5px;color:var(--muted);margin-top:14px}
+.err{color:var(--err);font-size:14px;margin-top:12px;min-height:20px}
+/* tiles */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:8px 0 6px}
+.tile{border:1px solid var(--line);border-radius:14px;padding:18px 18px 14px;background:#fff}
+.tile h3{margin:0 0 6px;font-size:17px}
+.tile p{font-size:14.5px;margin-bottom:8px}
+.tile .ex{font-style:italic;color:var(--muted);font-size:14px}
+.code{display:inline-block;font:500 24px "IBM Plex Mono",monospace;letter-spacing:.08em;background:var(--chip);border:1px solid var(--line);border-radius:10px;padding:10px 18px;margin:4px 0 16px}
+input.num, select{font:16px "IBM Plex Sans",system-ui,sans-serif;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;width:140px}
+select{width:100%;max-width:420px}
+label.fl{display:block;font-weight:600;margin:18px 0 8px}
+.pills{display:flex;flex-wrap:wrap;gap:10px}
+.pills .radio{margin:0}
+@media (max-width:860px){
+  .split,.split.wide{grid-template-columns:1fr}
+  .card{padding:24px 20px}
+  main{padding:24px 14px 48px}
+  .tiles{grid-template-columns:1fr}
+  table.lik td.st{width:40%;font-size:13.5px}
+  table.lik th{font-size:10px}
+}
+</style>
+</head>
+<body>
+<header><div class="in"><div class="brand">RESEARCH STUDY</div><div class="sec" id="sec">Welcome</div></div><div id="bar"></div></header>
+<main id="app"></main>
+
+<script>
+/* ======================= CONFIG ======================= */
+const CONFIG = {
+  STUDY_VERSION: "s2-1.0.0",
+  SUPABASE_URL: "https://zwipeiluipgwqrgbmncc.supabase.co",
+  SUPABASE_KEY: "sb_publishable_tOpJrlMKyh4KHuML2CEbbw_Z0Cam54c",   // publishable key: insert-only by RLS
+  TABLE: "study2_responses",
+  COMPLETION_CODE: "MUS2DONE",     // replace with the code Prolific gives you
+  PROLIFIC_RETURN: "https://app.prolific.com/submissions/complete?cc=",
+  MINUTES: 12
+};
+
+/* ======================= CONTENT ======================= */
+const SCENARIOS = [
+ { id:"laptop", tag:"Technology", title:"Your laptop before a big presentation",
+   body:[
+    "You have an important presentation tomorrow morning, and you will present from your own laptop. Lately it has been unreliable. Some days it starts quickly and runs smoothly. Other days it is slow, and last week the presentation software crashed once, then worked fine the next day.",
+    "Some people say problems like this always have a specific cause, such as a setting or a background program, that can be found and fixed. Others say laptops sometimes just act up for no clear reason."],
+   now:"You have about one hour tonight to deal with it.",
+   E:"Spend the hour tracking down what is causing the problem and fixing it.",
+   A:"Spend the hour setting up a backup: put the presentation on a USB drive and on a second device.",
+   know:"How much do you know about how laptops work?" },
+ { id:"ai_image", tag:"AI tools", title:"An AI image generator",
+   body:[
+    "You need an image for a class or work project, and you are using an AI image generator. Sometimes it produces almost exactly what you describe. Other times, with a very similar prompt, it misses key details or comes out distorted.",
+    "Some guides say the results depend on writing the prompt the right way, which is a skill you can learn. Others say these tools have built-in randomness, so the same prompt can give very different images."],
+   now:"You have about 20 minutes to get a usable image.",
+   E:"Spend the time working out the exact wording of one carefully written prompt.",
+   A:"Spend the time generating many images from similar prompts, then pick the best one.",
+   know:"How much do you know about using AI image generators?" },
+ { id:"invest", tag:"Money", title:"Investing a bonus",
+   body:[
+    "You just received a $2,000 bonus and want to invest it in the stock market for the next year. Stock prices go up and down from month to month.",
+    "Some analysts say prices follow company performance and economic trends, so careful research can tell you which stocks will do well. Others say prices move with news and investor mood in ways no one can predict."],
+   now:"You are deciding how to invest the $2,000.",
+   E:"Research companies and put the money into the one or two stocks you think will do best.",
+   A:"Put the money into a broad index fund that spreads it across hundreds of stocks.",
+   know:"How much do you know about investing in stocks?" },
+ { id:"delivery", tag:"Food delivery", title:"Dinner before a meeting",
+   body:[
+    "You have an online meeting at 7:00 tonight and want to eat before it. You usually order from the same delivery app. Sometimes your food arrives right on time. Other times, with the same restaurant and the same order, it arrives 30 to 40 minutes late.",
+    "Some people say delays have specific causes, such as busy hours at the restaurant or certain routes, that you can find out about. Others say it depends on which driver happens to be free, which is a matter of luck."],
+   now:"You are planning tonight's order.",
+   E:"Look into what causes the delays (busy times, delivery estimates, reviews) and choose the order that should arrive on time.",
+   A:"Place your usual order 40 minutes earlier than you normally would, to leave a buffer.",
+   know:"How much do you know about how food delivery apps work?" },
+ { id:"online_order", tag:"Shopping", title:"Reordering something you use every week",
+   body:[
+    "You regularly buy a product you use every week, such as printer ink or contact lens solution, from an online seller. Most orders arrive fine, but about one in four has arrived damaged or missing an item.",
+    "Some people say problems like this have a specific cause, such as a particular warehouse or packaging method, that you could find out. Others say shipping problems happen at random, whatever the seller does."],
+   now:"You need to place your next order, and you cannot afford to run out.",
+   E:"Contact the seller to find out what went wrong with the bad orders, then order from them.",
+   A:"Split the order between two different sellers, so one bad delivery does not leave you short.",
+   know:"How much do you know about how online orders are shipped?" }
+];
+
+const GRID_ITEMS = [
+ {k:"mu1", t:"I can't tell whether my uncertainty here comes from information I'm missing or from chance."},
+ {k:"mu2", t:"I can't tell whether learning more would make me more sure, or whether this is just unpredictable."},
+ {k:"mu3", t:"I feel torn between seeing this as something that could be figured out and seeing it as random."},
+ {k:"mu4", t:"I can't clearly say what kind of uncertainty this is."},
+ {k:"know_e", t:"With enough information, the outcome here could be predicted."},
+ {k:"chance_a", t:"The outcome here is largely a matter of chance."}
+];
+const ATTN = {k:"attn", t:"To show you are reading, please select “Disagree” in this row.", want:2};
+const LIK7 = ["Strongly disagree","Disagree","Somewhat disagree","Neither","Somewhat agree","Agree","Strongly agree"];
+
+const NFC = [ // Need for Closure Scale, 15-item short form (Roets & Van Hiel, 2011), verbatim
+ "I don't like situations that are uncertain.",
+ "I dislike questions which could be answered in many different ways.",
+ "I find that a well-ordered life with regular hours suits my temperament.",
+ "I feel uncomfortable when I don't understand the reason why an event occurred in my life.",
+ "I feel irritated when one person disagrees with what everyone else in a group believes.",
+ "I don't like to go into a situation without knowing what I can expect from it.",
+ "When I have made a decision, I feel relieved.",
+ "When I am confronted with a problem, I'm dying to reach a solution very quickly.",
+ "I would quickly become impatient and irritated if I would not find a solution to a problem immediately.",
+ "I don't like to be with people who are capable of unexpected actions.",
+ "I dislike it when a person's statement could mean many different things.",
+ "I find that establishing a consistent routine enables me to enjoy life more.",
+ "I enjoy having a clear and structured mode of life.",
+ "I do not usually consult many different opinions before forming my own view.",
+ "I dislike unpredictable situations."
+];
+const LIK6 = ["Strongly disagree","Moderately disagree","Slightly disagree","Slightly agree","Moderately agree","Strongly agree"];
+
+/* ======================= STATE ======================= */
+const qs = new URLSearchParams(location.search);
+const KEY = "mus2_state_v1";
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+let S;
+try{ S = JSON.parse(sessionStorage.getItem(KEY)||"null"); }catch(e){ S=null; }
+if(!S){
+  const order = Math.random()<.5 ? "mu_first" : "choice_first";
+  const scOrder = shuffle(SCENARIOS.map(s=>s.id));
+  S = {
+    step:0, started: new Date().toISOString(), t0: Date.now(),
+    source: qs.get("PROLIFIC_PID") ? "prolific" : (qs.get("id")||qs.get("sona") ? "sona" : "direct"),
+    participant_id: qs.get("PROLIFIC_PID") || qs.get("id") || qs.get("sona") || null,
+    study_id: qs.get("STUDY_ID"), session_id: qs.get("SESSION_ID"),
+    is_test: qs.get("test")==="1",
+    measure_order: order, scenario_order: scOrder,
+    left: Object.fromEntries(SCENARIOS.map(s=>[s.id, Math.random()<.5?"E":"A"])),
+    rows: Object.fromEntries(SCENARIOS.map((s,i)=>{
+       let r = shuffle(GRID_ITEMS.map(g=>g.k));
+       return [s.id, r];
+    })),
+    attn_pos: Math.floor(Math.random()*7), // inserted into the grid of the 3rd scenario shown
+    nfc_order: shuffle(NFC.map((_,i)=>i)),
+    answers:{ scenarios:{}, nfc:{}, demo:{}, final:{} },
+    timing:{}, events:{resumes:0, blur:0, back:0}
+  };
+} else { S.events.resumes++; }
+function save(){ try{sessionStorage.setItem(KEY, JSON.stringify(S))}catch(e){} }
+
+/* ======================= FLOW ======================= */
+function scenarioSteps(sid, pos){
+  const q = S.measure_order==="mu_first" ? ["grid","certainty","choice","know"] : ["choice","grid","certainty","know"];
+  return q.map((k,i)=>({kind:"q", sid, pos, q:k, qi:i}));
+}
+const FLOW = [
+  {kind:"consent"}, {kind:"about"}, {kind:"kinds"},
+  ...S.scenario_order.flatMap((sid,pos)=>[{kind:"intro", sid, pos}, ...scenarioSteps(sid,pos)]),
+  {kind:"nfc"}, {kind:"demo"}, {kind:"final"}, {kind:"debrief"}, {kind:"done"}
+];
+
+const app = document.getElementById("app");
+const secEl = document.getElementById("sec");
+const bar = document.getElementById("bar");
+let tScreen = Date.now();
+
+function go(n){
+  const cur = FLOW[S.step];
+  const key = cur.kind + (cur.sid?("_"+cur.sid):"") + (cur.q?("_"+cur.q):"");
+  S.timing[key] = (S.timing[key]||0) + (Date.now()-tScreen);
+  S.step = n; save(); render(); window.scrollTo(0,0);
+}
+function next(){ go(S.step+1); }
+// Soft prompt: blank answers get one reminder, then the person may continue (the consent letter allows skipping).
+let warned=false;
+function softGo(complete, msg){ if(complete || warned){ warned=false; save(); next(); return; } warned=true; document.getElementById("err").textContent = msg + " If you prefer not to answer, click the button again to continue."; }
+
+function el(html){ const d=document.createElement("div"); d.innerHTML=html.trim(); return d.firstChild; }
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+function render(){
+  tScreen = Date.now(); warned = false;
+  const st = FLOW[S.step];
+  bar.style.width = Math.round(100*S.step/(FLOW.length-1))+"%";
+  ({consent, about, kinds, intro, q:question, nfc, demo, final, debrief, done})[st.kind](st);
+}
+
+/* ---------- screens ---------- */
+function consent(){
+  secEl.textContent="Welcome";
+  // UGA IRB-approved consent letter (same as Study 1), session length updated for this study
+  app.innerHTML = `<div class="card narrow" id="letter">
+   <div class="qhead" style="letter-spacing:.08em">UNIVERSITY OF GEORGIA · CONSENT LETTER</div>
+   <h1>Judgment and Decision Making: How People Interpret Information and Make Decisions</h1>
+   <p>Dear Participant,</p>
+   <p>My name is Amin Shiri and I am a faculty member in the Terry College of Business at the University of Georgia. I am inviting you to take part in a research study.</p>
+   <p>I am conducting research on how people perceive and evaluate information and how these perceptions influence their judgments and decision-making.</p>
+   <p>I am looking for adults who are 18 years of age or older and who live in the United States.</p>
+   <p>If you agree to take part in this study, you will be asked to complete an online survey. In the survey, you will read short descriptions of products or situations and answer questions about your thoughts, feelings, and choices. This study includes multiple conditions, and you will be randomly assigned to one of these conditions. There will be one session. The session will take about ${CONFIG.MINUTES} minutes, and you can complete it online on your own computer.</p>
+   <p>Participation is voluntary. You can refuse to take part or stop at any time without penalty. Your decision to participate or to stop will have no impact on your relationship with the University of Georgia or with the survey platform.</p>
+   <p>There are no expected risks beyond those of everyday life. There are questions that may make you uncomfortable. You can skip these questions if you do not wish to answer them.</p>
+   <p>You may not benefit directly from this study. Your responses may help us better understand how people perceive and evaluate information and how these perceptions influence their judgments and decision-making.</p>
+   <p>This survey is anonymous. We will not ask for your name or collect any information that could identify you, so your answers cannot be linked back to you. Because the survey is online, there is a small chance that others could see your answers while they are being sent over the Internet. Once we receive your answers, they will be stored on secure, password-protected computers. Your information will not be used or shared for any future research studies.</p>
+   <p>If you are interested in participating or have questions about this research, please feel free to contact me at amin.shiri@uga.edu. If you have any complaints or questions about your rights as a research volunteer, contact the IRB at 706-542-3199 or by email at IRB@uga.edu.</p>
+   <p>Completing the survey will show that you agree to take part in this study. Please keep a copy of this letter for your records.</p>
+   <p style="margin-bottom:2px">Sincerely,</p>
+   <p style="line-height:1.45">Amin Shiri<br>Assistant Professor<br>Terry College of Business<br>University of Georgia<br>amin.shiri@uga.edu</p>
+   <hr>
+   <div class="btnrow" style="justify-content:space-between;align-items:center"><a href="#" id="pr" class="small" style="color:var(--ink2)">Print or save a copy of this letter</a><button class="primary" id="b">Begin the study</button></div></div>`;
+  document.getElementById("pr").onclick = e=>{ e.preventDefault(); window.print(); };
+  document.getElementById("b").onclick = ()=>{ S.answers.consent_at = new Date().toISOString(); next(); };
+}
+
+function about(){
+  secEl.textContent="Welcome";
+  app.innerHTML = `<div class="card narrow">
+   <h1>About this study</h1>
+   <p>You will read five short situations from everyday life. In each one, something does not always turn out the same way.</p>
+   <p>For each situation, imagine you are the person in it. We will ask how you see the situation and what you would do. There are no right or wrong answers. We are interested in your own view.</p>
+   <div class="btnrow"><button class="primary" id="b">Continue</button></div></div>`;
+  document.getElementById("b").onclick = next;
+}
+
+function kinds(){
+  secEl.textContent="Before you start";
+  app.innerHTML = `<div class="card narrow">
+   <h1>Two sources of uncertainty</h1>
+   <p>When you are not sure how something will turn out, the uncertainty can come from different places.</p>
+   <div class="tiles">
+     <div class="tile"><h3>Missing information</h3><p>Someone with enough information or skill could know or control the result.</p><div class="ex">Example: whether the Amazon River is longer than the Nile</div></div>
+     <div class="tile"><h3>Chance</h3><p>The result could turn out differently on similar occasions, so no amount of information would tell you ahead of time.</p><div class="ex">Example: whether a fair coin lands heads on the next flip</div></div>
+   </div>
+   <p class="small" style="margin-top:12px">Many real situations are not clearly one or the other, and you may not always be able to tell which applies. That is fine. Just answer based on how the situation looks to you.</p>
+   <div class="btnrow"><button class="primary" id="b" disabled>Continue</button></div></div>`;
+  const b=document.getElementById("b"); setTimeout(()=>b.disabled=false, S.is_test?0:8000); b.onclick=next;
+}
+
+function scenarioCard(sc, pos){
+  return `<div class="card scn"><div class="tag">Situation ${pos+1} of 5 · ${esc(sc.tag)}</div>
+    <h2>${esc(sc.title)}</h2>${sc.body.map(p=>`<p>${esc(p)}</p>`).join("")}<div class="now">${esc(sc.now)}</div></div>`;
+}
+
+function intro(st){
+  const sc = SCENARIOS.find(s=>s.id===st.sid);
+  secEl.textContent=`Situation ${st.pos+1} of 5`;
+  app.innerHTML = `<div class="narrow">${scenarioCard(sc, st.pos)}
+    <div class="btnrow"><button class="primary" id="b" disabled>I have read this — continue</button></div></div>`;
+  const b=document.getElementById("b"); setTimeout(()=>b.disabled=false, S.is_test?0:6000); b.onclick=next;
+}
+
+function ansFor(sid){ return S.answers.scenarios[sid] || (S.answers.scenarios[sid]={position:null}); }
+
+function question(st){
+  const sc = SCENARIOS.find(s=>s.id===st.sid);
+  const A = ansFor(st.sid); A.position = st.pos+1;
+  secEl.textContent=`Situation ${st.pos+1} of 5`;
+  const dots = [0,1,2,3].map(i=>`<span class="${i<=st.qi?"on":""}"></span>`).join("");
+  let inner = "", ok = ()=>true;
+  const head = `<div class="qhead">Question ${st.qi+1} of 4</div><div class="dots">${dots}</div>`;
+
+  if(st.q==="grid"){
+    let rows = S.rows[st.sid].map(k=>GRID_ITEMS.find(g=>g.k===k));
+    const withAttn = st.pos===2;
+    if(withAttn){ rows = rows.slice(); rows.splice(Math.min(S.attn_pos, rows.length), 0, ATTN); }
+    inner = `<div class="q">How much do you agree with each statement about this situation?</div>
+     <table class="lik"><tr><th></th>${LIK7.map((l,i)=>`<th>${i+1}<br>${l}</th>`).join("")}</tr>
+     ${rows.map(r=>`<tr data-k="${r.k}"><td class="st">${esc(r.t)}</td>${LIK7.map((_,i)=>`<td><input type="radio" name="${r.k}" value="${i+1}" aria-label="${LIK7[i]}" ${A[r.k]==i+1?"checked":""}></td>`).join("")}</tr>`).join("")}
+     </table>`;
+    ok = ()=>{ let all=true; rows.forEach(r=>{ const v=document.querySelector(`input[name="${r.k}"]:checked`); const tr=document.querySelector(`tr[data-k="${r.k}"]`);
+               if(!v){all=false;tr.classList.add("miss")} else {tr.classList.remove("miss"); A[r.k]=+v.value;} });
+               if(withAttn && A.attn!=null){ A.attn_pass = A.attn===ATTN.want ? 1:0; }
+               return all; };
+  }
+  if(st.q==="certainty"){
+    inner = `<div class="q">How sure are you about how things will turn out in this situation?</div>
+      <div class="slider" id="sl"><div class="track"></div><div class="fill" style="width:0"></div></div>
+      <div class="ends"><span>0 · Not at all sure</span><span>100 · Completely sure</span></div>
+      <div class="hint">Click or drag along the line to give your answer.</div>`;
+    ok = ()=> A.certainty!=null;
+  }
+  if(st.q==="choice"){
+    const left = S.left[st.sid], right = left==="E"?"A":"E";
+    const o = side=>{ const code = side; return `<label class="opt ${A.choice===code?"on":""}" data-c="${code}"><input type="radio" name="ch" value="${code}"><div class="lab">OPTION ${code===left?"1":"2"}</div><div class="tx">${esc(sc[code])}</div></label>`; };
+    inner = `<div class="q">If you had to choose one, what would you do?</div>${o(left)}${o(right)}`;
+    ok = ()=> !!A.choice;
+  }
+  if(st.q==="know"){
+    inner = `<div class="q">${esc(sc.know)}</div>
+      <div class="scale">${[1,2,3,4,5,6,7].map(v=>`<button data-v="${v}" class="${A.competence===v?"on":""}">${v}</button>`).join("")}</div>
+      <div class="ends"><span>1 · Nothing</span><span>7 · A great deal</span></div>`;
+    ok = ()=> A.competence!=null;
+  }
+
+  app.innerHTML = `<div class="split ${st.q==="grid"?"wide":""}">${scenarioCard(sc, st.pos)}
+    <div class="card">${head}${inner}<div class="err" id="err"></div>
+    <div class="btnrow"><button class="primary" id="b">Next</button></div></div></div>`;
+
+  if(st.q==="certainty") makeSlider(document.getElementById("sl"), A.certainty, v=>{A.certainty=v; save();});
+  if(st.q==="choice") document.querySelectorAll(".opt").forEach(lb=>lb.onclick=()=>{
+      document.querySelectorAll(".opt").forEach(x=>x.classList.remove("on")); lb.classList.add("on");
+      A.choice = lb.dataset.c; A.choice_aleatory = A.choice==="A"?1:0; A.left_option = S.left[st.sid]; save(); });
+  if(st.q==="know") document.querySelectorAll(".scale button").forEach(bt=>bt.onclick=()=>{
+      document.querySelectorAll(".scale button").forEach(x=>x.classList.remove("on")); bt.classList.add("on"); A.competence=+bt.dataset.v; save(); });
+
+  document.getElementById("b").onclick=()=>{
+    softGo(ok(), st.q==="grid" ? "Some rows are not answered yet." : "You have not answered this question yet.");
+  };
+}
+
+function makeSlider(node, init, cb){
+  const fill=node.querySelector(".fill"); let knob=null, val=null;
+  function set(v){ v=Math.max(0,Math.min(100,Math.round(v)));
+    if(!knob){ knob=el(`<div class="knob"><div class="val"></div></div>`); node.appendChild(knob); }
+    knob.style.left=v+"%"; fill.style.width=v+"%"; knob.querySelector(".val").textContent=v; val=v; cb(v); }
+  if(init!=null) set(init);
+  function pos(e){ const r=node.getBoundingClientRect(); const x=(e.touches?e.touches[0].clientX:e.clientX); return (x-r.left)/r.width*100; }
+  let drag=false;
+  node.addEventListener("pointerdown",e=>{drag=true; node.setPointerCapture(e.pointerId); set(pos(e));});
+  node.addEventListener("pointermove",e=>{ if(drag) set(pos(e)); });
+  node.addEventListener("pointerup",()=>drag=false);
+}
+
+function likGrid(items, labels, store, prefix){
+  return `<table class="lik"><tr><th></th>${labels.map((l,i)=>`<th>${i+1}<br>${l}</th>`).join("")}</tr>
+   ${items.map(([k,t])=>`<tr data-k="${k}"><td class="st">${esc(t)}</td>${labels.map((_,i)=>`<td><input type="radio" name="${k}" value="${i+1}" ${store[k]==i+1?"checked":""}></td>`).join("")}</tr>`).join("")}</table>`;
+}
+
+function nfc(){
+  secEl.textContent="About you";
+  const items = S.nfc_order.map(i=>["nfc_"+String(i+1).padStart(2,"0"), NFC[i]]);
+  app.innerHTML = `<div class="card" style="max-width:980px;margin:0 auto">
+    <div class="qhead">ABOUT YOU · 1 OF 2</div>
+    <h2>How much do you agree with each statement?</h2>
+    <p class="small">There are no right or wrong answers. Please answer every row.</p>
+    ${likGrid(items, LIK6, S.answers.nfc)}
+    <div class="err" id="err"></div><div class="btnrow"><button class="primary" id="b">Continue</button></div></div>`;
+  document.getElementById("b").onclick=()=>{
+    let all=true; items.forEach(([k])=>{ const v=document.querySelector(`input[name="${k}"]:checked`); const tr=document.querySelector(`tr[data-k="${k}"]`);
+      if(!v){all=false;tr.classList.add("miss")} else {tr.classList.remove("miss"); S.answers.nfc[k]=+v.value;} });
+    softGo(all, "Some rows are not answered yet.");
+  };
+}
+
+function demo(){
+  secEl.textContent="About you";
+  const D=S.answers.demo;
+  const pill=(name,opts)=>`<div class="pills">${opts.map(([v,t])=>`<label class="radio ${D[name]===v?"on":""}"><input type="radio" name="${name}" value="${v}" ${D[name]===v?"checked":""}>${t}</label>`).join("")}</div>`;
+  app.innerHTML = `<div class="card narrow">
+    <div class="qhead">ABOUT YOU · 2 OF 2</div><h2>A few last questions</h2>
+    <label class="fl">What is your age?</label><input class="num" id="age" type="number" min="18" max="100" value="${D.age??""}"> <span class="small">years</span>
+    <label class="fl">What is your gender?</label>${pill("gender",[["man","Man"],["woman","Woman"],["nonbinary","Non-binary"],["self","Prefer to self-describe"],["na","Prefer not to say"]])}
+    <input class="num" id="gself" style="width:100%;max-width:420px;margin-top:10px;display:${D.gender==="self"?"block":"none"}" placeholder="Please describe" value="${esc(D.gender_self||"")}">
+    <label class="fl">What is the highest level of education you have completed?</label>
+    <select id="edu"><option value="">Select…</option>
+      ${[["hs_less","Less than high school"],["hs","High school or equivalent"],["some_college","Some college, no degree"],["assoc","Associate degree"],["ba","Bachelor's degree"],["grad","Graduate or professional degree"],["na","Prefer not to say"]].map(([v,t])=>`<option value="${v}" ${D.education===v?"selected":""}>${t}</option>`).join("")}
+    </select>
+    <label class="fl">Have you ever invested money in individual stocks or funds?</label>${pill("invest_exp",[["yes","Yes"],["no","No"],["na","Prefer not to say"]])}
+    <div class="err" id="err"></div><div class="btnrow"><button class="primary" id="b">Continue</button></div></div>`;
+  document.querySelectorAll(".pills").forEach(g=>g.querySelectorAll(".radio").forEach(lb=>lb.addEventListener("click",()=>{
+     g.querySelectorAll(".radio").forEach(x=>x.classList.remove("on")); lb.classList.add("on");
+     const i=lb.querySelector("input"); D[i.name]=i.value;
+     if(i.name==="gender") document.getElementById("gself").style.display = i.value==="self"?"block":"none"; save(); })));
+  document.getElementById("b").onclick=()=>{
+    const age=+document.getElementById("age").value; D.education=document.getElementById("edu").value; D.gender_self=document.getElementById("gself").value.slice(0,80);
+    if(age>=18 && age<=100) D.age=age;
+    softGo(!!(D.age && D.gender && D.education && D.invest_exp), "Some questions are not answered yet (age must be 18 to 100).");
+  };
+}
+
+function final(){
+  secEl.textContent="Almost done";
+  const F=S.answers.final;
+  app.innerHTML = `<div class="card narrow"><h2>One honest question</h2>
+    <p>Did you read the situations and answer the questions carefully? Your answer will <b>not</b> affect your payment or credit. It only helps us decide which answers to use.</p>
+    ${[["yes","Yes, I answered carefully"],["no","No, I did not always answer carefully"]].map(([v,t])=>`<label class="radio ${F.careful===v?"on":""}"><input type="radio" name="careful" value="${v}">${t}</label>`).join("")}
+    <label class="fl">Optional: any comments about the study?</label>
+    <textarea id="cm" rows="3" style="width:100%;font:15px 'IBM Plex Sans';padding:10px;border:1.5px solid var(--line);border-radius:10px">${esc(F.comments||"")}</textarea>
+    <div class="err" id="err"></div><div class="btnrow"><button class="primary" id="b">Continue</button></div></div>`;
+  document.querySelectorAll(".radio").forEach(lb=>lb.onclick=()=>{document.querySelectorAll(".radio").forEach(x=>x.classList.remove("on")); lb.classList.add("on"); F.careful=lb.querySelector("input").value; save();});
+  document.getElementById("b").onclick=()=>{ F.comments=document.getElementById("cm").value.slice(0,1000); softGo(!!F.careful, "You have not chosen an answer yet."); };
+}
+
+function debrief(){
+  secEl.textContent="Finish";
+  app.innerHTML = `<div class="card narrow"><h1>Thank you</h1>
+    <p>This study looks at what people do when they are unsure whether their uncertainty comes from missing information or from chance. For example, someone who thinks a problem has a findable cause may look for that cause, while someone who thinks it is down to chance may set up a backup or spread their risk.</p>
+    <p>The situations you read were made up for this study. There were no right or wrong answers.</p>
+    <p class="small">Please click below to save your answers.</p>
+    <div class="err" id="err"></div><div class="btnrow"><button class="primary" id="b">Submit and finish</button></div></div>`;
+  const b=document.getElementById("b");
+  b.onclick=async()=>{ b.disabled=true; b.textContent="Saving…"; const ok = await submit(); if(ok){ next(); } else { b.disabled=false; b.textContent="Try again";
+      document.getElementById("err").textContent="We could not save your answers. Please check your connection and try again."; } };
+}
+
+function done(){
+  secEl.textContent="Finish"; bar.style.width="100%";
+  const pro = S.source==="prolific";
+  app.innerHTML = `<div class="card narrow"><h1>You're finished</h1>
+    <p>Your completion code:</p><div class="code">${CONFIG.COMPLETION_CODE}</div>
+    ${pro?`<p>You will be returned to Prolific in a moment. If nothing happens, use the button below.</p><div class="btnrow"><a href="${CONFIG.PROLIFIC_RETURN+CONFIG.COMPLETION_CODE}"><button class="primary">Return to Prolific</button></a></div>`
+         :`<p>Your answers have been saved. You can now close this page.</p>`}</div>`;
+  if(pro && !S.is_test) setTimeout(()=>location.href=CONFIG.PROLIFIC_RETURN+CONFIG.COMPLETION_CODE, 4000);
+}
+
+/* ======================= SAVE ======================= */
+async function submit(){
+  if(S.submitted) return true;
+  const sc = S.answers.scenarios;
+  const attn = Object.values(sc).find(a=>a.attn_pass!=null);
+  const row = {
+    study_version: CONFIG.STUDY_VERSION, source:S.source, participant_id:S.participant_id,
+    study_id:S.study_id, session_id:S.session_id, is_test:S.is_test,
+    measure_order:S.measure_order, scenario_order:S.scenario_order,
+    attention_pass: attn ? attn.attn_pass===1 : null,
+    answers: S.answers,
+    meta: { started:S.started, total_ms: Date.now()-S.t0, timing:S.timing, events:S.events,
+            left_option:S.left, grid_rows:S.rows, attn_pos:S.attn_pos, nfc_order:S.nfc_order,
+            ua:navigator.userAgent, screen:[screen.width,screen.height], viewport:[innerWidth,innerHeight],
+            device: /iPad|Tablet/i.test(navigator.userAgent)?"tablet":(/Mobi|Android|iPhone/i.test(navigator.userAgent)?"phone":"desktop") }
+  };
+  for(let i=0;i<3;i++){
+    try{
+      const r = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/${CONFIG.TABLE}`, {method:"POST",
+        headers:{"apikey":CONFIG.SUPABASE_KEY,"Content-Type":"application/json","Prefer":"return=minimal"}, body:JSON.stringify(row)});
+      if(r.ok){ S.submitted=true; save(); return true; }
+    }catch(e){}
+    await new Promise(r=>setTimeout(r, 800*(i+1)));
+  }
+  return false;
+}
+
+/* ======================= GUARDS ======================= */
+history.pushState(null,"",location.href);
+addEventListener("popstate",()=>{ history.pushState(null,"",location.href); S.events.back++; save(); });
+addEventListener("blur",()=>{ S.events.blur++; save(); });
+const IS_MOBILE = /iPad|Tablet|Mobi|Android|iPhone/i.test(navigator.userAgent) || (navigator.maxTouchPoints>1 && /Macintosh/.test(navigator.userAgent) && innerWidth<1100);
+if(IS_MOBILE && !S.is_test && S.step===0){
+  secEl.textContent="Welcome";
+  app.innerHTML = `<div class="card narrow"><h1>Please use a desktop or laptop</h1>
+    <p>This study can only be completed on a desktop or laptop computer, and it looks like you are using a phone or tablet.</p>
+    <p>${S.source==="prolific" ? "Please <b>return your submission</b> on Prolific. You will not be penalized. You are welcome to start again from a computer." : "Please open this link again from a computer."}</p></div>`;
+} else { render(); }
+</script>
+</body>
+</html>
