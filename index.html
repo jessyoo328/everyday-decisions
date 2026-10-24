@@ -48,7 +48,7 @@ hr{border:0;border-top:1px solid var(--line);margin:22px 0}
 table.lik{width:100%;border-collapse:collapse;font-size:14.5px}
 table.lik th{font-weight:500;font-size:11.5px;color:var(--muted);text-align:center;padding:0 2px 8px;vertical-align:bottom;line-height:1.25}
 table.lik td{border-top:1px solid var(--line);padding:9px 2px;text-align:center}
-table.lik td.st{text-align:left;padding-right:10px;color:var(--ink);width:44%}
+table.lik td.st{text-align:left;padding-right:10px;color:var(--ink);width:50%;font-size:14px}
 table.lik input{width:18px;height:18px;accent-color:var(--sel);cursor:pointer}
 table.lik tr.miss td.st{color:var(--err)}
 /* options */
@@ -57,7 +57,11 @@ table.lik tr.miss td.st{color:var(--err)}
 .opt.on{border-color:var(--sel);background:var(--sel-bg)}
 .opt input{display:none}
 .opt .lab{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:600;margin-bottom:2px}
-.opt .tx{font-size:15.5px;color:var(--ink)}
+.opt .tx{font-size:15px;color:var(--ink)}
+.abitem{margin-bottom:18px}
+.ablab{font-weight:600;font-size:14.5px;margin:0 0 8px}
+.abitem.miss .ablab{color:var(--err)}
+.abitem .opt{padding:11px 14px;margin-bottom:8px}
 .radio{display:flex;align-items:center;gap:12px;border:1.5px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:10px;cursor:pointer;background:#fff}
 .radio.on{border-color:var(--sel);background:var(--sel-bg)}
 .radio input{accent-color:var(--sel);width:18px;height:18px}
@@ -103,7 +107,7 @@ label.fl{display:block;font-weight:600;margin:18px 0 8px}
 <script>
 /* ======================= CONFIG ======================= */
 const CONFIG = {
-  STUDY_VERSION: "s2-2.0.0",
+  STUDY_VERSION: "s2-3.0.0",
   SUPABASE_URL: "https://zwipeiluipgwqrgbmncc.supabase.co",
   SUPABASE_KEY: "sb_publishable_tOpJrlMKyh4KHuML2CEbbw_Z0Cam54c",   // publishable key: insert-only by RLS
   TABLE: "study2_responses",
@@ -114,54 +118,162 @@ const CONFIG = {
 
 /* ======================= CONTENT ======================= */
 const SCENARIOS = [
- { id:"store", tag:"Shopping", title:"A store on a holiday",
+ { id:"invest", tag:"Money", title:"Investing in the stock market",
    body:[
-    "You want to buy a birthday gift on Monday, which is a public holiday, at a store across town. You are not sure whether the store will be open that day.",
-    "The store has already set its holiday hours. They are posted on its website, which you have not checked."],
-   now:"You have about 10 minutes now, and each option below takes about that long.",
-   E:"Look up the store's holiday hours before you go.",
-   A:"Skip looking it up and pick a second store on the way to try if the first is closed.",
-   know:"How much do you know about how stores set their holiday hours?" },
- { id:"tickets", tag:"Events", title:"Concert tickets by lottery",
+    "Imagine you are considering investing in the stock market. You encounter different perspectives on its predictability.",
+    "Some analyses you read suggest that stock movements, while complex, are largely driven by understandable economic fundamentals and company performance data. These sources imply that with sufficiently detailed research and the right analytical models, future stock prices can often be forecasted with reasonable accuracy.",
+    "However, other analyses you come across emphasize the significant role of unpredictable global events and sudden shifts in collective investor sentiment. These sources suggest that such factors introduce a strong element of chance, meaning stock prices can fluctuate in ways that even the most sophisticated models struggle to consistently predict.",
+    "Suppose you have $10,000 to invest. As you think about it, you feel uncertain about how your investment will turn out."],
+   mu_lead:"Thinking about the uncertainty involved in how the stock market performs or how stock prices move, please rate how much you agree or disagree with the following statements.",
+   mu:[
+    "I am unsure whether the uncertainty I feel about the stock market’s performance is due to a lack of information on my part or just the inherent unpredictability of the market itself.",
+    "It’s difficult for me to tell if finding more specific details about how the stock market works would actually reduce my uncertainty about its movements, or if the uncertainty is just part of how the stock market operates.",
+    "I feel conflicted about whether the variability in stock market movements is something that could eventually be understood and controlled (with enough knowledge), or if it’s simply random.",
+    "My sense of uncertainty about the stock market leaves me questioning whether the cause of its fluctuations is knowable (like missing economic facts) or unknowable (like pure chance).",
+    "I would have a hard time explaining to someone else whether the uncertainty surrounding the stock market’s direction is due to solvable analytical problems or just its inherent, unpredictable nature.",
+    "I am not confident in judging if the reasons for the stock market’s unpredictable behavior are more about incomplete knowledge on an investor’s part or about fundamental randomness in the system.",
+    "The nature of my uncertainty about the stock market feels ambiguous – I can’t clearly pin it down as either a knowledge gap that can be filled or the inherent variability of market forces."],
+   ab_lead:"Thinking about how you would invest the $10,000, please choose the option that best describes your most likely course of action or way of thinking.",
+   ab:[
+    {label:"Main investing goal",
+     E:"My main goal would be to identify the specific stocks that will perform best, because careful research can tell which ones will do well.",
+     A:"My main goal would be to get a sense of the overall range of returns and risks, accepting that individual stock movements are hard to predict."},
+    {label:"Additional information",
+     E:"A detailed report from an expert financial analyst focusing on the specific company’s fundamentals, its strategic position in the industry, and a precise forecast for its future value.",
+     A:"A statistical analysis showing how stocks with a similar risk profile have performed historically, including the typical range of returns, the frequency of significant gains or losses, and overall market volatility trends."},
+    {label:"Belief about predicting the market",
+     E:"I’d mostly believe that with enough research, I could become quite confident about which stocks will go up.",
+     A:"I’d mostly believe that even after careful research, there is always a large element of chance in how stocks move."},
+    {label:"How to invest the $10,000",
+     E:"Concentrated investment: put the money into one or two individual stocks that I believe, after research, have the highest potential for strong returns.",
+     A:"Diversified investment: spread the money across a broad market index fund to minimize risk from any single stock performing poorly."}],
+   lean_target:"the stock market" },
+
+ { id:"ai_image", tag:"Technology", title:"An AI image generator",
    body:[
-    "You want tickets to a concert. Tickets are given out by a random drawing among everyone who signs up before Friday.",
-    "Every sign-up has the same chance of winning, and no one knows in advance who will be picked."],
-   now:"You have about 15 minutes now, and each option below takes about that long.",
-   E:"Read up on how the drawing works to see what affects who wins, then sign up for the date you want most.",
-   A:"Sign up for the drawing for two different concert dates.",
-   know:"How much do you know about how ticket drawings work?" },
- { id:"commute", tag:"Travel", title:"Getting to a job interview on time",
+    "You’re using a new AI image generator tool. You give it a text prompt describing a specific scene you want it to create, for example, ‘A futuristic cityscape at sunset with flying cars and glowing neon signs.’",
+    "Sometimes, the AI generates an image that is incredibly close to what you imagined – detailed, creative, and capturing the mood perfectly. Other times, using a very similar prompt, or even the exact same prompt again, it produces images that are quite different, missing key elements you described, looking distorted, or having a completely unexpected style. There doesn’t seem to be an obvious reason for why it’s sometimes so accurate and other times so off-target, even when your input is consistent.",
+    "You know these AI models are trained on vast amounts of data and have complex algorithms. Some online guides suggest that mastering ‘prompt engineering’ – learning the very specific keywords, phrases, and parameters the AI understands best – is the key to getting consistently great results. This implies it’s a skill you can develop. However, you’ve also read that these generative AIs have an inherent element of ‘creativity’ or randomness, meaning they might always produce a range of varied outputs even with identical prompts, and that this unpredictability is just part of how they work.",
+    "So, as you think about trying to generate another specific image, you’re feeling quite uncertain about whether the AI will actually produce the kind of image you’re hoping for this time."],
+   mu_lead:"Thinking about this uncertainty you’re feeling regarding the AI image generator’s output for your next image, please rate how much you agree or disagree with the following statements.",
+   mu:[
+    "I am unsure whether the uncertainty I feel about the AI generator’s output is due to a lack of information on my part (like not knowing the best prompting techniques) or just the inherent unpredictability of how the AI creates images.",
+    "It’s difficult for me to tell if finding more specific details about how this AI interprets prompts would actually reduce my uncertainty about the results, or if the uncertainty is just part of how this AI generator works.",
+    "I feel conflicted about whether the variability I observed in the AI’s generated images is something that could eventually be understood and controlled (with better prompts), or if it’s simply random.",
+    "My sense of uncertainty about the AI generator leaves me questioning whether the cause of its inconsistent results is knowable (like missing facts about its algorithm) or unknowable (like pure chance in its generation process).",
+    "I would have a hard time explaining to someone else whether the uncertainty surrounding the AI’s image generation is due to a solvable problem (like user skill) or just its inherent nature.",
+    "I am not confident in judging if the reasons for the AI generator’s unpredictable behavior are more about incomplete knowledge I have about prompting or about fundamental randomness in its design.",
+    "The nature of my uncertainty about the AI generator feels ambiguous – I can’t clearly pin it down as either a knowledge gap I have or the inherent variability of the technology."],
+   ab_lead:"Given this uncertainty about the AI image generator, please choose the option that best describes what you’d be most inclined to do or think.",
+   ab:[
+    {label:"Your approach to generating the next image",
+     E:"I would spend significant time trying to craft the perfect, highly detailed prompt, believing that the key to a good image lies in discovering the exact “right” way to instruct the AI for this specific image.",
+     A:"I would try several different variations of my prompt, or even the same prompt multiple times, expecting a range of outputs and hoping one of them randomly turns out well."},
+    {label:"Interpreting a badly generated image",
+     E:"If the AI produced a bad image, I’d assume my prompt was flawed or lacked some crucial detail, and that I need to learn more about how to ask correctly.",
+     A:"If the AI produced a bad image, I’d think it was just an unlucky or random output from the AI this time, and that these things just happen with generative models."},
+    {label:"Strategy for getting a specific desired image",
+     E:"I would focus on systematically tweaking my prompt, word by word, parameter by parameter, trying to converge on the one image I have in mind, assuming I can eventually control the output precisely.",
+     A:"I would generate a larger number of images with similar prompts and then pick the one that, by chance, comes closest to what I want, assuming there will always be variation."},
+    {label:"Belief about “mastering” the AI",
+     E:"I believe that with enough practice and study of “prompt engineering,” one can become an expert who can reliably get this AI to produce exactly what they want almost every time.",
+     A:"I believe that while good prompts help, there will always be a significant element of surprise or randomness in what this AI generates, making true “mastery” of its output difficult."}],
+   lean_target:"the AI image generator’s output" },
+
+ { id:"juice", tag:"Food", title:"Orange juice at a café",
    body:[
-    "You have a job interview tomorrow at 9:00 a.m. across town, and you will drive. You have driven this route at that time of day before. Some mornings it took 25 minutes. Other mornings it took 45 minutes.",
-    "You are not sure why some mornings are slower than others."],
-   now:"You have about 20 minutes tonight, and each option below takes about that long.",
-   E:"Spend the time looking into what makes the drive slow, and work out exactly when to leave.",
-   A:"Skip looking into it and plan to leave 30 minutes earlier than you normally would.",
-   know:"How much do you know about traffic where you live?" },
- { id:"ai_image", tag:"AI tools", title:"Making an image with AI",
+    "You’re at a local café you visit occasionally. They have a sign advertising ‘Freshly Squeezed Orange Juice – Made Today!’ You’ve ordered it a few times before.",
+    "Sometimes, the orange juice tastes amazing – bright, sweet, and clearly very fresh. Other times, it tastes a bit dull, watery, or like it might not be as fresh as advertised, even though the sign is still up and they say it’s made fresh daily. There doesn’t seem to be a pattern to when it’s good versus when it’s disappointing.",
+    "You know that ‘freshly squeezed’ can mean different things at different places – some might squeeze it right before your eyes, others might mean it was squeezed that morning from a particular batch of oranges which can vary in quality. You also know that taste can be subjective or affected by small things.",
+    "Today, you’re thinking of ordering it again, but as you look at the sign, you’re feeling quite uncertain about whether the orange juice you get this time will be the amazing kind or the disappointing kind."],
+   mu_lead:"Thinking about this uncertainty you’re feeling regarding the quality of the orange juice you might get today, please rate how much you agree or disagree with the following statements.",
+   mu:[
+    "I am unsure whether the uncertainty I feel about the orange juice’s quality is due to a lack of information on my part (like not knowing their exact process) or just the inherent unpredictability of its taste each day.",
+    "It’s difficult for me to tell if finding more specific details about how the café makes its juice would actually reduce my uncertainty about its taste, or if the uncertainty is just part of how their juice works out.",
+    "I feel conflicted about whether the variability I observed in the juice’s taste is something that could eventually be understood and controlled (by them or me), or if it’s simply random.",
+    "My sense of uncertainty about the juice leaves me questioning whether the cause of its varying quality is knowable (like missing facts about their oranges or methods) or unknowable (like pure chance each day).",
+    "I would have a hard time explaining to someone else whether the uncertainty surrounding the juice’s quality is due to a solvable problem (like inconsistent preparation) or just its inherent nature (like variable fruit).",
+    "I am not confident in judging if the reasons for the juice’s unpredictable quality are more about incomplete knowledge I have or about fundamental randomness in their process or ingredients.",
+    "The nature of my uncertainty about the juice feels ambiguous – I can’t clearly pin it down as either a knowledge gap I have about their system or the inherent variability of the product."],
+   ab_lead:"Thinking about how you would decide whether to order the orange juice today, please choose the option that best describes your most likely course of action or way of thinking.",
+   ab:[
+    {label:"Information gathering before ordering",
+     E:"I would try to ask the staff specific questions about today’s batch of oranges or exactly when this juice was made, to get factual details that could help me know if it’s good right now.",
+     A:"I would think about my past experiences – how many times it has been good versus bad – to get a sense of the general odds of it being good today."},
+    {label:"Interpreting past variability",
+     E:"I’d believe that the times it wasn’t good were due to specific, identifiable reasons (e.g., they used a different kind of orange that day, a new staff member made it incorrectly) that could be known.",
+     A:"I’d believe that the quality just naturally varies from day to day in a somewhat random way due to factors like fruit ripeness or small batch differences that are hard to control perfectly."},
+    {label:"Decision basis",
+     E:"I’d order it if I felt reasonably confident, based on any clues I could gather, that this specific serving today is likely to be the good kind.",
+     A:"I’d order it if I felt the general chance of it being good was high enough based on past experiences, accepting it’s always a bit of a gamble."},
+    {label:"Reaction to a disappointing juice",
+     E:"If it was disappointing, I’d try to figure out why – maybe ask the staff if something was different today – to improve my knowledge for future orders.",
+     A:"If it was disappointing, I’d just make a mental note that it’s “one of those days” for the juice, adding it to my overall tally of good vs. bad experiences."}],
+   lean_target:"the orange juice’s quality" },
+
+ { id:"sleep", tag:"Health", title:"Sleep before a big day",
    body:[
-    "You need an image for a project, and you are using an AI image tool. Sometimes it gives you almost exactly what you describe. Other times, with a very similar description, it misses key details or looks wrong.",
-    "You are not sure why the results differ so much."],
-   now:"You have about 20 minutes to get a usable image, and each option below takes about that long.",
-   E:"Spend the time working out the best wording for one carefully written request.",
-   A:"Spend the time making many images from similar requests, then pick the best one.",
-   know:"How much do you know about using AI image tools?" },
- { id:"online_order", tag:"Shopping", title:"Reordering something you use every week",
+    "You have a big day tomorrow, and you want a good night’s sleep tonight. For the past few weeks, you have kept the same bedtime routine.",
+    "Some nights, you fall asleep quickly and wake up feeling refreshed. Other nights, with the same routine, you lie awake for a long time and wake up tired. There doesn’t seem to be an obvious pattern to which nights go well.",
+    "Some articles you have read say that poor sleep always has specific causes – like caffeine, screen time, or room temperature – that you can find and fix with the right information. Others say that sleep quality naturally varies from night to night in ways that no one can fully control.",
+    "So, as you think about tonight, you’re feeling quite uncertain about whether you will sleep well."],
+   mu_lead:"Thinking about this uncertainty you’re feeling regarding how well you will sleep tonight, please rate how much you agree or disagree with the following statements.",
+   mu:[
+    "I am unsure whether the uncertainty I feel about my sleep is due to a lack of information on my part (like not knowing what disturbs my sleep) or just the inherent unpredictability of sleep from night to night.",
+    "It’s difficult for me to tell if finding more specific details about what affects my sleep would actually reduce my uncertainty, or if the uncertainty is just part of how sleep works.",
+    "I feel conflicted about whether the variability I observed in my sleep is something that could eventually be understood and controlled (by changing my habits), or if it’s simply random.",
+    "My sense of uncertainty about my sleep leaves me questioning whether the cause of the bad nights is knowable (like missing facts about my habits) or unknowable (like pure chance).",
+    "I would have a hard time explaining to someone else whether the uncertainty surrounding my sleep is due to a solvable problem (like a habit I could change) or just its inherent nature.",
+    "I am not confident in judging if the reasons for my sleep’s unpredictable quality are more about incomplete knowledge I have or about fundamental randomness.",
+    "The nature of my uncertainty about my sleep feels ambiguous – I can’t clearly pin it down as either a knowledge gap I have or the inherent variability of sleep."],
+   ab_lead:"Thinking about how you would approach tonight, please choose the option that best describes your most likely course of action or way of thinking.",
+   ab:[
+    {label:"Main goal",
+     E:"My main goal would be to find the specific reason why some nights go badly, because I believe there is a definite cause that can be identified and fixed.",
+     A:"My main goal would be to get a general sense of how often bad nights happen, accepting that sleep can vary from night to night."},
+    {label:"Information seeking",
+     E:"I would track specific things each night – caffeine, screen time, room temperature – to pinpoint exactly what is disturbing my sleep.",
+     A:"I would look at how common occasional bad nights are for most people, to understand the general range of normal sleep."},
+    {label:"Belief about a solution",
+     E:"I’d mostly believe that if I put in enough focused effort, I can reach a point where I sleep well almost every night.",
+     A:"I’d mostly believe that even with a perfect routine, there is always some chance of a bad night."},
+    {label:"Planning for tomorrow",
+     E:"I would focus on getting tonight’s routine exactly right, so that tomorrow goes well.",
+     A:"I would plan tomorrow so that a bad night would not ruin it, for example by not scheduling anything important first thing in the morning."}],
+   lean_target:"how well you will sleep tonight" },
+
+ { id:"commute", tag:"Travel", title:"Driving to a job interview",
    body:[
-    "You regularly buy a product you use every week from an online seller. Most orders arrive fine, but about one in four has arrived damaged.",
-    "You are not sure why some orders arrive damaged and others do not."],
-   now:"You need to place your next order now, and you cannot afford to run out.",
-   E:"Contact the seller to find out what went wrong with the damaged orders, then order from them.",
-   A:"Split the order between two different sellers, so one damaged delivery does not leave you short.",
-   know:"How much do you know about how online orders are shipped?" }
+    "You have a job interview tomorrow at 9:00 a.m. across town, and you will drive there. You have driven this route at that time of day several times before.",
+    "Some mornings, the drive took 25 minutes. Other mornings, leaving at the same time, it took 45 minutes. There doesn’t seem to be an obvious pattern to which mornings are slow.",
+    "Some people say slow mornings have specific causes – like certain days of the week, roadwork, or particular traffic lights – that you can figure out with the right information. Others say that morning traffic varies by chance in ways that no one can predict.",
+    "So, as you plan for tomorrow, you’re feeling quite uncertain about how long the drive will take."],
+   mu_lead:"Thinking about this uncertainty you’re feeling regarding how long tomorrow’s drive will take, please rate how much you agree or disagree with the following statements.",
+   mu:[
+    "I am unsure whether the uncertainty I feel about the drive is due to a lack of information on my part (like not knowing about roadwork or traffic patterns) or just the inherent unpredictability of traffic.",
+    "It’s difficult for me to tell if finding more specific details about traffic on this route would actually reduce my uncertainty, or if the uncertainty is just part of how traffic works.",
+    "I feel conflicted about whether the variability I observed in the drive time is something that could eventually be understood and planned for, or if it’s simply random.",
+    "My sense of uncertainty about the drive leaves me questioning whether the cause of the slow mornings is knowable (like missing facts about the route) or unknowable (like pure chance).",
+    "I would have a hard time explaining to someone else whether the uncertainty surrounding the drive time is due to a solvable problem (like choosing the right time or route) or just its inherent nature.",
+    "I am not confident in judging if the reasons for the drive’s unpredictable length are more about incomplete knowledge I have or about fundamental randomness in traffic.",
+    "The nature of my uncertainty about the drive feels ambiguous – I can’t clearly pin it down as either a knowledge gap I have or the inherent variability of traffic."],
+   ab_lead:"Thinking about how you would plan tomorrow’s drive, please choose the option that best describes your most likely course of action or way of thinking.",
+   ab:[
+    {label:"Main goal",
+     E:"My main goal would be to figure out exactly what makes some mornings slow, because I believe there is a definite cause that can be identified.",
+     A:"My main goal would be to get a general sense of how long the drive usually takes, including the bad days, accepting that traffic varies."},
+    {label:"Information seeking",
+     E:"I would look up roadwork, traffic reports, and route options for tomorrow morning to pinpoint the best time and route.",
+     A:"I would think back on how often the drive has been slow before, to get a sense of the general odds of a delay."},
+    {label:"Belief about predicting the drive",
+     E:"I’d mostly believe that with the right information, I can predict tomorrow’s drive time quite precisely.",
+     A:"I’d mostly believe that no matter what I check, there is always some chance of an unexpected delay."},
+    {label:"When to leave",
+     E:"I would leave at the exact time my research says is right.",
+     A:"I would leave well earlier than I think I need to, to allow for a possible delay."}],
+   lean_target:"how long tomorrow’s drive will take" }
 ];
 
-const GRID_ITEMS = [
- {k:"mu1", t:"I can't tell whether my uncertainty here comes from information I'm missing or from chance."},
- {k:"mu2", t:"I can't tell whether learning more would make me more sure, or whether this is just unpredictable."},
- {k:"mu3", t:"I feel torn between seeing this as something that could be figured out and seeing it as random."},
- {k:"mu4", t:"I can't clearly say what kind of uncertainty this is."}
-];
 const ATTN = {k:"attn", t:"To show you are reading, please select “Disagree” in this row.", want:2};
 const LIK7 = ["Strongly disagree","Disagree","Somewhat disagree","Neither","Somewhat agree","Agree","Strongly agree"];
 
@@ -186,41 +298,37 @@ const LIK6 = ["Strongly disagree","Moderately disagree","Slightly disagree","Sli
 
 /* ======================= STATE ======================= */
 const qs = new URLSearchParams(location.search);
-const KEY = "mus2_state_v2";
+const KEY = "mus2_state_v3";
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 let S;
 try{ S = JSON.parse(sessionStorage.getItem(KEY)||"null"); }catch(e){ S=null; }
 if(!S){
-  const order = "choice_first";
-  const scOrder = shuffle(SCENARIOS.map(s=>s.id));
+  const forced = SCENARIOS.find(x=>x.id===qs.get("s"));            // ?s=<id> for testing and screenshots only
+  const sc = forced || SCENARIOS[Math.floor(Math.random()*SCENARIOS.length)];   // one situation per person
   S = {
     step:0, started: new Date().toISOString(), t0: Date.now(),
     source: qs.get("PROLIFIC_PID") ? "prolific" : (qs.get("id")||qs.get("sona") ? "sona" : "direct"),
     participant_id: qs.get("PROLIFIC_PID") || qs.get("id") || qs.get("sona") || null,
     study_id: qs.get("STUDY_ID"), session_id: qs.get("SESSION_ID"),
     is_test: qs.get("test")==="1",
-    measure_order: order, scenario_order: scOrder,
-    left: Object.fromEntries(SCENARIOS.map(s=>[s.id, Math.random()<.5?"E":"A"])),
-    rows: Object.fromEntries(SCENARIOS.map((s,i)=>{
-       let r = shuffle(GRID_ITEMS.map(g=>g.k));
-       return [s.id, r];
-    })),
-    attn_pos: Math.floor(Math.random()*5), // inserted into the grid of the 3rd scenario shown
+    measure_order: "mu_ab_lean", scenario_order: [sc.id],
+    mu_order: shuffle([1,2,3,4,5,6,7]),
+    attn_pos: Math.floor(Math.random()*8),
+    ab_order: shuffle([1,2,3,4]),
+    ab_left: [1,2,3,4].map(()=>Math.random()<.5?"E":"A"),
     nfc_order: shuffle(NFC.map((_,i)=>i)),
-    answers:{ scenarios:{}, nfc:{}, demo:{}, final:{} },
+    answers:{ scenario: sc.id, scenarios:{}, nfc:{}, demo:{}, final:{} },
     timing:{}, events:{resumes:0, blur:0, back:0}
   };
 } else { S.events.resumes++; }
 function save(){ try{sessionStorage.setItem(KEY, JSON.stringify(S))}catch(e){} }
 
 /* ======================= FLOW ======================= */
-const QS = ["choice","lean","sure","grid","know"];
-function scenarioSteps(sid, pos){
-  return QS.map((k,i)=>({kind:"q", sid, pos, q:k, qi:i}));
-}
+const SID = S.scenario_order[0];
+const QS = ["mu","ab","lean"];
 const FLOW = [
-  {kind:"consent"}, {kind:"about"}, {kind:"kinds"},
-  ...S.scenario_order.flatMap((sid,pos)=>[{kind:"intro", sid, pos}, ...scenarioSteps(sid,pos)]),
+  {kind:"consent"}, {kind:"about"}, {kind:"intro", sid:SID, pos:0},
+  ...QS.map((k,i)=>({kind:"q", sid:SID, pos:0, q:k, qi:i})),
   {kind:"nfc"}, {kind:"demo"}, {kind:"final"}, {kind:"debrief"}, {kind:"done"}
 ];
 
@@ -247,7 +355,7 @@ function render(){
   tScreen = Date.now(); warned = false;
   const st = FLOW[S.step];
   bar.style.width = Math.round(100*S.step/(FLOW.length-1))+"%";
-  ({consent, about, kinds, intro, q:question, nfc, demo, final, debrief, done})[st.kind](st);
+  ({consent, about, intro, q:question, nfc, demo, final, debrief, done})[st.kind](st);
 }
 
 /* ---------- screens ---------- */
@@ -280,103 +388,76 @@ function about(){
   secEl.textContent="Welcome";
   app.innerHTML = `<div class="card narrow">
    <h1>About this study</h1>
-   <p>You will read five short situations from everyday life. In each one, something does not always turn out the same way.</p>
-   <p>For each situation, imagine you are the person in it. We will ask what you would do and how you see the situation. There are no right or wrong answers. We are interested in your own view.</p>
+   <p>You will read a short situation from everyday life and answer some questions about it. Then you will answer a few questions about yourself.</p>
+   <p>Please imagine you are the person in the situation. There are no right or wrong answers. We are interested in your own view.</p>
    <div class="btnrow"><button class="primary" id="b">Continue</button></div></div>`;
   document.getElementById("b").onclick = next;
 }
 
-function kinds(){
-  secEl.textContent="Before you start";
-  app.innerHTML = `<div class="card narrow">
-   <h1>Two sources of uncertainty</h1>
-   <p>When you are not sure how something will turn out, the uncertainty can come from different places.</p>
-   <div class="tiles">
-     <div class="tile"><h3>Missing information</h3><p>Someone with enough information or skill could know or control the result.</p><div class="ex">Example: whether the Amazon River is longer than the Nile</div></div>
-     <div class="tile"><h3>Chance</h3><p>The result could turn out differently on similar occasions, so no amount of information would tell you ahead of time.</p><div class="ex">Example: whether a fair coin lands heads on the next flip</div></div>
-   </div>
-   <p class="small" style="margin-top:12px">Many real situations are not clearly one or the other, and you may not always be able to tell which applies. That is fine. Just answer based on how the situation looks to you.</p>
-   <div class="btnrow"><button class="primary" id="b" disabled>Continue</button></div></div>`;
-  const b=document.getElementById("b"); setTimeout(()=>b.disabled=false, S.is_test?0:8000); b.onclick=next;
-}
-
-function scenarioCard(sc, pos){
-  return `<div class="card scn"><div class="tag">Situation ${pos+1} of 5 · ${esc(sc.tag)}</div>
-    <h2>${esc(sc.title)}</h2>${sc.body.map(p=>`<p>${esc(p)}</p>`).join("")}<div class="now">${esc(sc.now)}</div></div>`;
+function scenarioCard(sc){
+  return `<div class="card scn"><div class="tag">${esc(sc.tag)}</div>
+    <h2>${esc(sc.title)}</h2>${sc.body.map(p=>`<p>${esc(p)}</p>`).join("")}</div>`;
 }
 
 function intro(st){
   const sc = SCENARIOS.find(s=>s.id===st.sid);
-  secEl.textContent=`Situation ${st.pos+1} of 5`;
-  app.innerHTML = `<div class="narrow">${scenarioCard(sc, st.pos)}
+  secEl.textContent="The situation";
+  app.innerHTML = `<div class="narrow">${scenarioCard(sc)}
     <div class="btnrow"><button class="primary" id="b" disabled>I have read this — continue</button></div></div>`;
-  const b=document.getElementById("b"); setTimeout(()=>b.disabled=false, S.is_test?0:6000); b.onclick=next;
+  const b=document.getElementById("b"); setTimeout(()=>b.disabled=false, S.is_test?0:10000); b.onclick=next;
 }
 
 function ansFor(sid){ return S.answers.scenarios[sid] || (S.answers.scenarios[sid]={position:null}); }
 
 function question(st){
   const sc = SCENARIOS.find(s=>s.id===st.sid);
-  const A = ansFor(st.sid); A.position = st.pos+1;
-  secEl.textContent=`Situation ${st.pos+1} of 5`;
-  const dots = QS.map((_,i)=>i).map(i=>`<span class="${i<=st.qi?"on":""}"></span>`).join("");
-  let inner = "", ok = ()=>true;
-  const head = `<div class="qhead">Question ${st.qi+1} of ${QS.length}</div><div class="dots">${dots}</div>`;
+  const A = ansFor(st.sid); A.position = 1;
+  secEl.textContent="The situation";
+  const dots = QS.map((_,i)=>`<span class="${i<=st.qi?"on":""}"></span>`).join("");
+  const head = `<div class="qhead">Part ${st.qi+1} of ${QS.length}</div><div class="dots">${dots}</div>`;
+  let inner = "", ok = ()=>true, wide = false;
 
-  if(st.q==="grid"){
-    let rows = S.rows[st.sid].map(k=>GRID_ITEMS.find(g=>g.k===k));
-    const withAttn = st.pos===2;
-    if(withAttn){ rows = rows.slice(); rows.splice(Math.min(S.attn_pos, rows.length), 0, ATTN); }
-    inner = `<div class="q">How much do you agree with each statement about this situation?</div>
+  if(st.q==="mu"){
+    wide = true;
+    let rows = S.mu_order.map(i=>({k:"mu"+i, t:sc.mu[i-1]}));
+    rows.splice(S.attn_pos, 0, ATTN);
+    inner = `<div class="q" style="font-size:17px">${esc(sc.mu_lead)}</div>
      <table class="lik"><tr><th></th>${LIK7.map((l,i)=>`<th>${i+1}<br>${l}</th>`).join("")}</tr>
      ${rows.map(r=>`<tr data-k="${r.k}"><td class="st">${esc(r.t)}</td>${LIK7.map((_,i)=>`<td><input type="radio" name="${r.k}" value="${i+1}" aria-label="${LIK7[i]}" ${A[r.k]==i+1?"checked":""}></td>`).join("")}</tr>`).join("")}
      </table>`;
     ok = ()=>{ let all=true; rows.forEach(r=>{ const v=document.querySelector(`input[name="${r.k}"]:checked`); const tr=document.querySelector(`tr[data-k="${r.k}"]`);
                if(!v){all=false;tr.classList.add("miss")} else {tr.classList.remove("miss"); A[r.k]=+v.value;} });
-               if(withAttn && A.attn!=null){ A.attn_pass = A.attn===ATTN.want ? 1:0; }
+               if(A.attn!=null) A.attn_pass = A.attn===ATTN.want ? 1 : 0;
                return all; };
   }
+  if(st.q==="ab"){
+    inner = `<div class="q" style="font-size:17px">${esc(sc.ab_lead)}</div>` + S.ab_order.map((j,n)=>{
+      const it = sc.ab[j-1], first = S.ab_left[j-1], second = first==="E"?"A":"E", key="ab"+j;
+      const o = (code,lab)=>`<label class="opt ${A[key+"_choice"]===code?"on":""}" data-k="${key}" data-c="${code}"><input type="radio" name="${key}" value="${code}"><div class="lab">${lab}</div><div class="tx">${esc(it[code])}</div></label>`;
+      return `<div class="abitem" data-k="${key}"><div class="ablab">${n+1}. ${esc(it.label)}</div>${o(first,"A")}${o(second,"B")}</div>`;
+    }).join("");
+    ok = ()=>{ let all=true; [1,2,3,4].forEach(j=>{ const el=document.querySelector(`.abitem[data-k="ab${j}"]`);
+               if(A["ab"+j+"_choice"]==null){all=false; el.classList.add("miss");} else el.classList.remove("miss"); }); return all; };
+  }
   if(st.q==="lean"){
-    inner = `<div class="q">In this situation, does the uncertainty come more from missing information or more from chance?</div>
+    inner = `<div class="q">Overall, does your uncertainty about ${esc(sc.lean_target)} come more from missing information or more from chance?</div>
       <div class="slider" id="sl"><div class="track"></div><div class="fill" style="width:0"></div></div>
       <div class="ends"><span>Entirely missing information</span><span>Entirely chance</span></div>
       <div class="hint">Click or drag along the line to give your answer.</div>`;
     ok = ()=> A.lean!=null;
   }
-  if(st.q==="sure"){
-    inner = `<div class="q">How sure are you about your answer to the previous question?</div>
-      <div class="slider" id="sl"><div class="track"></div><div class="fill" style="width:0"></div></div>
-      <div class="ends"><span>0 · Not at all sure</span><span>100 · Completely sure</span></div>
-      <div class="hint">Click or drag along the line to give your answer.</div>`;
-    ok = ()=> A.sure!=null;
-  }
-  if(st.q==="choice"){
-    const left = S.left[st.sid], right = left==="E"?"A":"E";
-    const o = side=>{ const code = side; return `<label class="opt ${A.choice===code?"on":""}" data-c="${code}"><input type="radio" name="ch" value="${code}"><div class="lab">OPTION ${code===left?"1":"2"}</div><div class="tx">${esc(sc[code])}</div></label>`; };
-    inner = `<div class="q">If you had to choose one, what would you do?</div>${o(left)}${o(right)}`;
-    ok = ()=> !!A.choice;
-  }
-  if(st.q==="know"){
-    inner = `<div class="q">${esc(sc.know)}</div>
-      <div class="scale">${[1,2,3,4,5,6,7].map(v=>`<button data-v="${v}" class="${A.competence===v?"on":""}">${v}</button>`).join("")}</div>
-      <div class="ends"><span>1 · Nothing</span><span>7 · A great deal</span></div>`;
-    ok = ()=> A.competence!=null;
-  }
 
-  app.innerHTML = `<div class="split ${st.q==="grid"?"wide":""}">${scenarioCard(sc, st.pos)}
+  app.innerHTML = `<div class="split ${wide?"wide":""}">${scenarioCard(sc)}
     <div class="card">${head}${inner}<div class="err" id="err"></div>
     <div class="btnrow"><button class="primary" id="b">Next</button></div></div></div>`;
 
   if(st.q==="lean") makeSlider(document.getElementById("sl"), A.lean, v=>{A.lean=v; save();}, true);
-  if(st.q==="sure") makeSlider(document.getElementById("sl"), A.sure, v=>{A.sure=v; save();});
-  if(st.q==="choice") document.querySelectorAll(".opt").forEach(lb=>lb.onclick=()=>{
-      document.querySelectorAll(".opt").forEach(x=>x.classList.remove("on")); lb.classList.add("on");
-      A.choice = lb.dataset.c; A.choice_aleatory = A.choice==="A"?1:0; A.left_option = S.left[st.sid]; save(); });
-  if(st.q==="know") document.querySelectorAll(".scale button").forEach(bt=>bt.onclick=()=>{
-      document.querySelectorAll(".scale button").forEach(x=>x.classList.remove("on")); bt.classList.add("on"); A.competence=+bt.dataset.v; save(); });
+  if(st.q==="ab") document.querySelectorAll(".opt").forEach(lb=>lb.onclick=()=>{
+      const k=lb.dataset.k; document.querySelectorAll(`.opt[data-k="${k}"]`).forEach(x=>x.classList.remove("on")); lb.classList.add("on");
+      A[k+"_choice"]=lb.dataset.c; A[k]= lb.dataset.c==="A"?1:0; save(); });
 
   document.getElementById("b").onclick=()=>{
-    softGo(ok(), st.q==="grid" ? "Some rows are not answered yet." : "You have not answered this question yet.");
+    softGo(ok(), st.q==="mu" ? "Some rows are not answered yet." : (st.q==="ab" ? "Some questions are not answered yet." : "You have not answered this question yet."));
   };
 }
 
@@ -443,7 +524,7 @@ function final(){
   secEl.textContent="Almost done";
   const F=S.answers.final;
   app.innerHTML = `<div class="card narrow"><h2>One honest question</h2>
-    <p>Did you read the situations and answer the questions carefully? Your answer will <b>not</b> affect your payment or credit. It only helps us decide which answers to use.</p>
+    <p>Did you read the situation and answer the questions carefully? Your answer will <b>not</b> affect your payment or credit. It only helps us decide which answers to use.</p>
     ${[["yes","Yes, I answered carefully"],["no","No, I did not always answer carefully"]].map(([v,t])=>`<label class="radio ${F.careful===v?"on":""}"><input type="radio" name="careful" value="${v}">${t}</label>`).join("")}
     <label class="fl">Optional: any comments about the study?</label>
     <textarea id="cm" rows="3" style="width:100%;font:15px 'IBM Plex Sans';padding:10px;border:1.5px solid var(--line);border-radius:10px">${esc(F.comments||"")}</textarea>
@@ -455,8 +536,8 @@ function final(){
 function debrief(){
   secEl.textContent="Finish";
   app.innerHTML = `<div class="card narrow"><h1>Thank you</h1>
-    <p>This study looks at what people do when they are unsure whether their uncertainty comes from missing information or from chance. For example, someone who thinks a problem has a cause that can be found may look for it, while someone who thinks it is down to chance may set up a backup or spread their risk. We also asked how sure you were about which of the two it was.</p>
-    <p>The situations you read were made up for this study. There were no right or wrong answers.</p>
+    <p>This study looks at what people do when they are unsure whether their uncertainty comes from missing information or from chance. For example, someone who thinks a problem has a cause that can be found may look for it, while someone who thinks it is down to chance may set up a backup or spread their risk. We also asked how clearly you could tell which of the two it was.</p>
+    <p>The situation you read was made up for this study. There were no right or wrong answers.</p>
     <p class="small">Please click below to save your answers.</p>
     <div class="err" id="err"></div><div class="btnrow"><button class="primary" id="b">Submit and finish</button></div></div>`;
   const b=document.getElementById("b");
@@ -486,7 +567,7 @@ async function submit(){
     attention_pass: attn ? attn.attn_pass===1 : null,
     answers: S.answers,
     meta: { started:S.started, total_ms: Date.now()-S.t0, timing:S.timing, events:S.events,
-            left_option:S.left, grid_rows:S.rows, attn_pos:S.attn_pos, nfc_order:S.nfc_order,
+            mu_order:S.mu_order, ab_order:S.ab_order, ab_left:S.ab_left, attn_pos:S.attn_pos, nfc_order:S.nfc_order,
             ua:navigator.userAgent, screen:[screen.width,screen.height], viewport:[innerWidth,innerHeight],
             device: /iPad|Tablet/i.test(navigator.userAgent)?"tablet":(/Mobi|Android|iPhone/i.test(navigator.userAgent)?"phone":"desktop") }
   };
