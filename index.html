@@ -103,7 +103,7 @@ label.fl{display:block;font-weight:600;margin:18px 0 8px}
 <script>
 /* ======================= CONFIG ======================= */
 const CONFIG = {
-  STUDY_VERSION: "s2-1.1.0",
+  STUDY_VERSION: "s2-2.0.0",
   SUPABASE_URL: "https://zwipeiluipgwqrgbmncc.supabase.co",
   SUPABASE_KEY: "sb_publishable_tOpJrlMKyh4KHuML2CEbbw_Z0Cam54c",   // publishable key: insert-only by RLS
   TABLE: "study2_responses",
@@ -114,55 +114,53 @@ const CONFIG = {
 
 /* ======================= CONTENT ======================= */
 const SCENARIOS = [
- { id:"laptop", tag:"Technology", title:"Your laptop before a big presentation",
+ { id:"store", tag:"Shopping", title:"A store on a holiday",
    body:[
-    "You have an important presentation tomorrow morning, and you will present from your own laptop. Lately it has been unreliable. Some days it runs smoothly. Other days it is slow, and last week the presentation software crashed once, then worked fine the next day.",
-    "Some people say problems like this have a specific cause, such as a setting or a background program, that can be found and fixed. Others say laptops sometimes act up by chance, for no reason anyone can find."],
-   now:"You have one hour tonight, and each option below takes about an hour.",
-   E:"Spend the hour finding out what is causing the problem and fixing it.",
-   A:"Spend the hour setting up a backup: put the presentation on a USB drive and on a second device.",
-   know:"How much do you know about how laptops work?" },
+    "You want to buy a birthday gift on Monday, which is a public holiday, at a store across town. You are not sure whether the store will be open that day.",
+    "The store has already set its holiday hours. They are posted on its website, which you have not checked."],
+   now:"You have about 10 minutes now, and each option below takes about that long.",
+   E:"Look up the store's holiday hours before you go.",
+   A:"Skip looking it up and pick a second store on the way to try if the first is closed.",
+   know:"How much do you know about how stores set their holiday hours?" },
+ { id:"tickets", tag:"Events", title:"Concert tickets by lottery",
+   body:[
+    "You want tickets to a concert. Tickets are given out by a random drawing among everyone who signs up before Friday.",
+    "Every sign-up has the same chance of winning, and no one knows in advance who will be picked."],
+   now:"You have about 15 minutes now, and each option below takes about that long.",
+   E:"Read up on how the drawing works to see what affects who wins, then sign up for the date you want most.",
+   A:"Sign up for the drawing for two different concert dates.",
+   know:"How much do you know about how ticket drawings work?" },
+ { id:"commute", tag:"Travel", title:"Getting to a job interview on time",
+   body:[
+    "You have a job interview tomorrow at 9:00 a.m. across town, and you will drive. You have driven this route at that time of day before. Some mornings it took 25 minutes. Other mornings it took 45 minutes.",
+    "You are not sure why some mornings are slower than others."],
+   now:"You have about 20 minutes tonight, and each option below takes about that long.",
+   E:"Spend the time looking into what makes the drive slow, and work out exactly when to leave.",
+   A:"Skip looking into it and plan to leave 30 minutes earlier than you normally would.",
+   know:"How much do you know about traffic where you live?" },
  { id:"ai_image", tag:"AI tools", title:"Making an image with AI",
    body:[
     "You need an image for a project, and you are using an AI image tool. Sometimes it gives you almost exactly what you describe. Other times, with a very similar description, it misses key details or looks wrong.",
-    "Some people say the results depend on how you word the request, which you can learn to do well. Others say these tools give different results by chance, even for the same request."],
-   now:"You have 20 minutes to get a usable image, and each option below takes about that long.",
+    "You are not sure why the results differ so much."],
+   now:"You have about 20 minutes to get a usable image, and each option below takes about that long.",
    E:"Spend the time working out the best wording for one carefully written request.",
    A:"Spend the time making many images from similar requests, then pick the best one.",
    know:"How much do you know about using AI image tools?" },
- { id:"commute", tag:"Travel", title:"Getting to a job interview on time",
+ { id:"online_order", tag:"Shopping", title:"Reordering something you use every week",
    body:[
-    "You have a job interview tomorrow at 9:00 a.m. across town, and you will drive. You have driven this route at that time of day before. Some days it took 25 minutes. Other days it took 45 minutes.",
-    "Some people say travel times have specific causes, such as certain days, traffic lights, or routes, that you can figure out. Others say how traffic moves on any given morning comes down to chance."],
-   now:"You are planning tonight how to get there on time.",
-   E:"Spend 20 minutes tonight studying traffic patterns and routes to work out exactly when to leave.",
-   A:"Skip the planning and leave 30 minutes earlier than you think you need to.",
-   know:"How much do you know about traffic where you live?" },
- { id:"baking", tag:"Cooking", title:"Baking bread for a party",
-   body:[
-    "You are bringing homemade bread to a party on Saturday. You have made this bread several times with the same recipe. Sometimes it comes out tall and soft. Other times it comes out flat and dense.",
-    "Some people say baking problems have a specific cause, such as the yeast or the kitchen temperature, that you can figure out. Others say bread turns out differently by chance, even when you do everything the same way."],
-   now:"You have Saturday morning to bake, and each option below takes about that long.",
-   E:"Figure out what went wrong in the flat batches, then bake one loaf carefully.",
-   A:"Bake two loaves the usual way, so that at least one is likely to turn out well.",
-   know:"How much do you know about baking?" },
- { id:"job_apps", tag:"Work", title:"Applying for jobs",
-   body:[
-    "You are looking for a new job and have sent out several applications. Some of them led to an interview. Others, for very similar jobs, got no reply at all.",
-    "Some people say these outcomes have specific causes, such as how your application is written, that you can figure out and fix. Others say hiring depends a lot on chance, such as who happens to read your application."],
-   now:"You have one weekend to spend on applications, and each option below takes about that long.",
-   E:"Get detailed feedback on your application and use it to write one strong application for the job you want most.",
-   A:"Send your current application to many more similar jobs.",
-   know:"How much do you know about how hiring works?" }
+    "You regularly buy a product you use every week from an online seller. Most orders arrive fine, but about one in four has arrived damaged.",
+    "You are not sure why some orders arrive damaged and others do not."],
+   now:"You need to place your next order now, and you cannot afford to run out.",
+   E:"Contact the seller to find out what went wrong with the damaged orders, then order from them.",
+   A:"Split the order between two different sellers, so one damaged delivery does not leave you short.",
+   know:"How much do you know about how online orders are shipped?" }
 ];
 
 const GRID_ITEMS = [
  {k:"mu1", t:"I can't tell whether my uncertainty here comes from information I'm missing or from chance."},
  {k:"mu2", t:"I can't tell whether learning more would make me more sure, or whether this is just unpredictable."},
  {k:"mu3", t:"I feel torn between seeing this as something that could be figured out and seeing it as random."},
- {k:"mu4", t:"I can't clearly say what kind of uncertainty this is."},
- {k:"know_e", t:"With enough information, the outcome here could be predicted."},
- {k:"chance_a", t:"The outcome here is largely a matter of chance."}
+ {k:"mu4", t:"I can't clearly say what kind of uncertainty this is."}
 ];
 const ATTN = {k:"attn", t:"To show you are reading, please select “Disagree” in this row.", want:2};
 const LIK7 = ["Strongly disagree","Disagree","Somewhat disagree","Neither","Somewhat agree","Agree","Strongly agree"];
@@ -188,12 +186,12 @@ const LIK6 = ["Strongly disagree","Moderately disagree","Slightly disagree","Sli
 
 /* ======================= STATE ======================= */
 const qs = new URLSearchParams(location.search);
-const KEY = "mus2_state_v1";
+const KEY = "mus2_state_v2";
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 let S;
 try{ S = JSON.parse(sessionStorage.getItem(KEY)||"null"); }catch(e){ S=null; }
 if(!S){
-  const order = Math.random()<.5 ? "mu_first" : "choice_first";
+  const order = "choice_first";
   const scOrder = shuffle(SCENARIOS.map(s=>s.id));
   S = {
     step:0, started: new Date().toISOString(), t0: Date.now(),
@@ -207,7 +205,7 @@ if(!S){
        let r = shuffle(GRID_ITEMS.map(g=>g.k));
        return [s.id, r];
     })),
-    attn_pos: Math.floor(Math.random()*7), // inserted into the grid of the 3rd scenario shown
+    attn_pos: Math.floor(Math.random()*5), // inserted into the grid of the 3rd scenario shown
     nfc_order: shuffle(NFC.map((_,i)=>i)),
     answers:{ scenarios:{}, nfc:{}, demo:{}, final:{} },
     timing:{}, events:{resumes:0, blur:0, back:0}
@@ -216,9 +214,9 @@ if(!S){
 function save(){ try{sessionStorage.setItem(KEY, JSON.stringify(S))}catch(e){} }
 
 /* ======================= FLOW ======================= */
+const QS = ["choice","lean","sure","grid","know"];
 function scenarioSteps(sid, pos){
-  const q = S.measure_order==="mu_first" ? ["grid","certainty","choice","know"] : ["choice","grid","certainty","know"];
-  return q.map((k,i)=>({kind:"q", sid, pos, q:k, qi:i}));
+  return QS.map((k,i)=>({kind:"q", sid, pos, q:k, qi:i}));
 }
 const FLOW = [
   {kind:"consent"}, {kind:"about"}, {kind:"kinds"},
@@ -283,7 +281,7 @@ function about(){
   app.innerHTML = `<div class="card narrow">
    <h1>About this study</h1>
    <p>You will read five short situations from everyday life. In each one, something does not always turn out the same way.</p>
-   <p>For each situation, imagine you are the person in it. We will ask how you see the situation and what you would do. There are no right or wrong answers. We are interested in your own view.</p>
+   <p>For each situation, imagine you are the person in it. We will ask what you would do and how you see the situation. There are no right or wrong answers. We are interested in your own view.</p>
    <div class="btnrow"><button class="primary" id="b">Continue</button></div></div>`;
   document.getElementById("b").onclick = next;
 }
@@ -321,9 +319,9 @@ function question(st){
   const sc = SCENARIOS.find(s=>s.id===st.sid);
   const A = ansFor(st.sid); A.position = st.pos+1;
   secEl.textContent=`Situation ${st.pos+1} of 5`;
-  const dots = [0,1,2,3].map(i=>`<span class="${i<=st.qi?"on":""}"></span>`).join("");
+  const dots = QS.map((_,i)=>i).map(i=>`<span class="${i<=st.qi?"on":""}"></span>`).join("");
   let inner = "", ok = ()=>true;
-  const head = `<div class="qhead">Question ${st.qi+1} of 4</div><div class="dots">${dots}</div>`;
+  const head = `<div class="qhead">Question ${st.qi+1} of ${QS.length}</div><div class="dots">${dots}</div>`;
 
   if(st.q==="grid"){
     let rows = S.rows[st.sid].map(k=>GRID_ITEMS.find(g=>g.k===k));
@@ -338,12 +336,19 @@ function question(st){
                if(withAttn && A.attn!=null){ A.attn_pass = A.attn===ATTN.want ? 1:0; }
                return all; };
   }
-  if(st.q==="certainty"){
-    inner = `<div class="q">How sure are you about how things will turn out in this situation?</div>
+  if(st.q==="lean"){
+    inner = `<div class="q">In this situation, does the uncertainty come more from missing information or more from chance?</div>
+      <div class="slider" id="sl"><div class="track"></div><div class="fill" style="width:0"></div></div>
+      <div class="ends"><span>Entirely missing information</span><span>Entirely chance</span></div>
+      <div class="hint">Click or drag along the line to give your answer.</div>`;
+    ok = ()=> A.lean!=null;
+  }
+  if(st.q==="sure"){
+    inner = `<div class="q">How sure are you about your answer to the previous question?</div>
       <div class="slider" id="sl"><div class="track"></div><div class="fill" style="width:0"></div></div>
       <div class="ends"><span>0 · Not at all sure</span><span>100 · Completely sure</span></div>
       <div class="hint">Click or drag along the line to give your answer.</div>`;
-    ok = ()=> A.certainty!=null;
+    ok = ()=> A.sure!=null;
   }
   if(st.q==="choice"){
     const left = S.left[st.sid], right = left==="E"?"A":"E";
@@ -362,7 +367,8 @@ function question(st){
     <div class="card">${head}${inner}<div class="err" id="err"></div>
     <div class="btnrow"><button class="primary" id="b">Next</button></div></div></div>`;
 
-  if(st.q==="certainty") makeSlider(document.getElementById("sl"), A.certainty, v=>{A.certainty=v; save();});
+  if(st.q==="lean") makeSlider(document.getElementById("sl"), A.lean, v=>{A.lean=v; save();}, true);
+  if(st.q==="sure") makeSlider(document.getElementById("sl"), A.sure, v=>{A.sure=v; save();});
   if(st.q==="choice") document.querySelectorAll(".opt").forEach(lb=>lb.onclick=()=>{
       document.querySelectorAll(".opt").forEach(x=>x.classList.remove("on")); lb.classList.add("on");
       A.choice = lb.dataset.c; A.choice_aleatory = A.choice==="A"?1:0; A.left_option = S.left[st.sid]; save(); });
@@ -374,11 +380,11 @@ function question(st){
   };
 }
 
-function makeSlider(node, init, cb){
+function makeSlider(node, init, cb, noNum){
   const fill=node.querySelector(".fill"); let knob=null, val=null;
   function set(v){ v=Math.max(0,Math.min(100,Math.round(v)));
     if(!knob){ knob=el(`<div class="knob"><div class="val"></div></div>`); node.appendChild(knob); }
-    knob.style.left=v+"%"; fill.style.width=v+"%"; knob.querySelector(".val").textContent=v; val=v; cb(v); }
+    knob.style.left=v+"%"; fill.style.width=v+"%"; knob.querySelector(".val").textContent=noNum?"":v; val=v; cb(v); }
   if(init!=null) set(init);
   function pos(e){ const r=node.getBoundingClientRect(); const x=(e.touches?e.touches[0].clientX:e.clientX); return (x-r.left)/r.width*100; }
   let drag=false;
@@ -449,7 +455,7 @@ function final(){
 function debrief(){
   secEl.textContent="Finish";
   app.innerHTML = `<div class="card narrow"><h1>Thank you</h1>
-    <p>This study looks at what people do when they are unsure whether their uncertainty comes from missing information or from chance. For example, someone who thinks a problem has a findable cause may look for that cause, while someone who thinks it is down to chance may set up a backup or spread their risk.</p>
+    <p>This study looks at what people do when they are unsure whether their uncertainty comes from missing information or from chance. For example, someone who thinks a problem has a cause that can be found may look for it, while someone who thinks it is down to chance may set up a backup or spread their risk. We also asked how sure you were about which of the two it was.</p>
     <p>The situations you read were made up for this study. There were no right or wrong answers.</p>
     <p class="small">Please click below to save your answers.</p>
     <div class="err" id="err"></div><div class="btnrow"><button class="primary" id="b">Submit and finish</button></div></div>`;
