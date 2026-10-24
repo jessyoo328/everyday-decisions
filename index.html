@@ -107,7 +107,7 @@ label.fl{display:block;font-weight:600;margin:18px 0 8px}
 <script>
 /* ======================= CONFIG ======================= */
 const CONFIG = {
-  STUDY_VERSION: "s2-3.0.0",
+  STUDY_VERSION: "s2-4.0.0",
   SUPABASE_URL: "https://zwipeiluipgwqrgbmncc.supabase.co",
   SUPABASE_KEY: "sb_publishable_tOpJrlMKyh4KHuML2CEbbw_Z0Cam54c",   // publishable key: insert-only by RLS
   TABLE: "study2_responses",
@@ -298,37 +298,38 @@ const LIK6 = ["Strongly disagree","Moderately disagree","Slightly disagree","Sli
 
 /* ======================= STATE ======================= */
 const qs = new URLSearchParams(location.search);
-const KEY = "mus2_state_v3";
+const KEY = "mus2_state_v4";
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 let S;
 try{ S = JSON.parse(sessionStorage.getItem(KEY)||"null"); }catch(e){ S=null; }
 if(!S){
-  const forced = SCENARIOS.find(x=>x.id===qs.get("s"));            // ?s=<id> for testing and screenshots only
-  const sc = forced || SCENARIOS[Math.floor(Math.random()*SCENARIOS.length)];   // one situation per person
+  let order = shuffle(SCENARIOS.map(x=>x.id));                      // all five situations, random order
+  const forced = qs.get("s"); if(forced && order.includes(forced)) order = [forced, ...order.filter(x=>x!==forced)];   // ?s=<id> puts one first (testing only)
+  const per = f=>Object.fromEntries(order.map(id=>[id,f()]));
   S = {
     step:0, started: new Date().toISOString(), t0: Date.now(),
     source: qs.get("PROLIFIC_PID") ? "prolific" : (qs.get("id")||qs.get("sona") ? "sona" : "direct"),
     participant_id: qs.get("PROLIFIC_PID") || qs.get("id") || qs.get("sona") || null,
     study_id: qs.get("STUDY_ID"), session_id: qs.get("SESSION_ID"),
     is_test: qs.get("test")==="1",
-    measure_order: "mu_ab_lean", scenario_order: [sc.id],
-    mu_order: shuffle([1,2,3,4,5,6,7]),
-    attn_pos: Math.floor(Math.random()*8),
-    ab_order: shuffle([1,2,3,4]),
-    ab_left: [1,2,3,4].map(()=>Math.random()<.5?"E":"A"),
+    measure_order: "ab_mu_lean", scenario_order: order,
+    mu_order: per(()=>shuffle([1,2,3,4,5,6,7])),
+    attn_sit: 2, attn_pos: Math.floor(Math.random()*8),         // attention row sits in the MU grid of the 3rd situation
+    ab_order: per(()=>shuffle([1,2,3,4])),
+    ab_left: per(()=>[1,2,3,4].map(()=>Math.random()<.5?"E":"A")),
     nfc_order: shuffle(NFC.map((_,i)=>i)),
-    answers:{ scenario: sc.id, scenarios:{}, nfc:{}, demo:{}, final:{} },
+    answers:{ scenarios:{}, nfc:{}, demo:{}, final:{} },
     timing:{}, events:{resumes:0, blur:0, back:0}
   };
 } else { S.events.resumes++; }
 function save(){ try{sessionStorage.setItem(KEY, JSON.stringify(S))}catch(e){} }
 
 /* ======================= FLOW ======================= */
-const SID = S.scenario_order[0];
-const QS = ["mu","ab","lean"];
+const NS = S.scenario_order.length;
+const QS = ["ab","mu","lean"];                                   // what they would do first, then MU, then lean
 const FLOW = [
-  {kind:"consent"}, {kind:"about"}, {kind:"intro", sid:SID, pos:0},
-  ...QS.map((k,i)=>({kind:"q", sid:SID, pos:0, q:k, qi:i})),
+  {kind:"consent"}, {kind:"about"},
+  ...S.scenario_order.flatMap((sid,pos)=>[{kind:"intro", sid, pos}, ...QS.map((k,i)=>({kind:"q", sid, pos, q:k, qi:i}))]),
   {kind:"nfc"}, {kind:"demo"}, {kind:"final"}, {kind:"debrief"}, {kind:"done"}
 ];
 
@@ -388,30 +389,30 @@ function about(){
   secEl.textContent="Welcome";
   app.innerHTML = `<div class="card narrow">
    <h1>About this study</h1>
-   <p>You will read a short situation from everyday life and answer some questions about it. Then you will answer a few questions about yourself.</p>
-   <p>Please imagine you are the person in the situation. There are no right or wrong answers. We are interested in your own view.</p>
+   <p>You will read five short situations from everyday life, one at a time, and answer some questions about each one. Then you will answer a few questions about yourself.</p>
+   <p>Please imagine you are the person in each situation. There are no right or wrong answers. We are interested in your own view.</p>
    <div class="btnrow"><button class="primary" id="b">Continue</button></div></div>`;
   document.getElementById("b").onclick = next;
 }
 
-function scenarioCard(sc){
-  return `<div class="card scn"><div class="tag">${esc(sc.tag)}</div>
+function scenarioCard(sc, pos){
+  return `<div class="card scn"><div class="qhead">Situation ${pos+1} of ${NS}</div><div class="tag">${esc(sc.tag)}</div>
     <h2>${esc(sc.title)}</h2>${sc.body.map(p=>`<p>${esc(p)}</p>`).join("")}</div>`;
 }
 
 function intro(st){
   const sc = SCENARIOS.find(s=>s.id===st.sid);
   secEl.textContent="The situation";
-  app.innerHTML = `<div class="narrow">${scenarioCard(sc)}
+  app.innerHTML = `<div class="narrow">${scenarioCard(sc, st.pos)}
     <div class="btnrow"><button class="primary" id="b" disabled>I have read this — continue</button></div></div>`;
-  const b=document.getElementById("b"); setTimeout(()=>b.disabled=false, S.is_test?0:10000); b.onclick=next;
+  const b=document.getElementById("b"); setTimeout(()=>b.disabled=false, S.is_test?0:(st.pos===0?10000:8000)); b.onclick=next;
 }
 
 function ansFor(sid){ return S.answers.scenarios[sid] || (S.answers.scenarios[sid]={position:null}); }
 
 function question(st){
   const sc = SCENARIOS.find(s=>s.id===st.sid);
-  const A = ansFor(st.sid); A.position = 1;
+  const A = ansFor(st.sid); A.position = st.pos+1;
   secEl.textContent="The situation";
   const dots = QS.map((_,i)=>`<span class="${i<=st.qi?"on":""}"></span>`).join("");
   const head = `<div class="qhead">Part ${st.qi+1} of ${QS.length}</div><div class="dots">${dots}</div>`;
@@ -419,8 +420,8 @@ function question(st){
 
   if(st.q==="mu"){
     wide = true;
-    let rows = S.mu_order.map(i=>({k:"mu"+i, t:sc.mu[i-1]}));
-    rows.splice(S.attn_pos, 0, ATTN);
+    let rows = S.mu_order[st.sid].map(i=>({k:"mu"+i, t:sc.mu[i-1]}));
+    if(st.pos===S.attn_sit) rows.splice(S.attn_pos, 0, ATTN);
     inner = `<div class="q" style="font-size:17px">${esc(sc.mu_lead)}</div>
      <table class="lik"><tr><th></th>${LIK7.map((l,i)=>`<th>${i+1}<br>${l}</th>`).join("")}</tr>
      ${rows.map(r=>`<tr data-k="${r.k}"><td class="st">${esc(r.t)}</td>${LIK7.map((_,i)=>`<td><input type="radio" name="${r.k}" value="${i+1}" aria-label="${LIK7[i]}" ${A[r.k]==i+1?"checked":""}></td>`).join("")}</tr>`).join("")}
@@ -431,8 +432,8 @@ function question(st){
                return all; };
   }
   if(st.q==="ab"){
-    inner = `<div class="q" style="font-size:17px">${esc(sc.ab_lead)}</div>` + S.ab_order.map((j,n)=>{
-      const it = sc.ab[j-1], first = S.ab_left[j-1], second = first==="E"?"A":"E", key="ab"+j;
+    inner = `<div class="q" style="font-size:17px">${esc(sc.ab_lead)}</div>` + S.ab_order[st.sid].map((j,n)=>{
+      const it = sc.ab[j-1], first = S.ab_left[st.sid][j-1], second = first==="E"?"A":"E", key="ab"+j;
       const o = (code,lab)=>`<label class="opt ${A[key+"_choice"]===code?"on":""}" data-k="${key}" data-c="${code}"><input type="radio" name="${key}" value="${code}"><div class="lab">${lab}</div><div class="tx">${esc(it[code])}</div></label>`;
       return `<div class="abitem" data-k="${key}"><div class="ablab">${n+1}. ${esc(it.label)}</div>${o(first,"A")}${o(second,"B")}</div>`;
     }).join("");
@@ -447,7 +448,7 @@ function question(st){
     ok = ()=> A.lean!=null;
   }
 
-  app.innerHTML = `<div class="split ${wide?"wide":""}">${scenarioCard(sc)}
+  app.innerHTML = `<div class="split ${wide?"wide":""}">${scenarioCard(sc, st.pos)}
     <div class="card">${head}${inner}<div class="err" id="err"></div>
     <div class="btnrow"><button class="primary" id="b">Next</button></div></div></div>`;
 
@@ -524,7 +525,7 @@ function final(){
   secEl.textContent="Almost done";
   const F=S.answers.final;
   app.innerHTML = `<div class="card narrow"><h2>One honest question</h2>
-    <p>Did you read the situation and answer the questions carefully? Your answer will <b>not</b> affect your payment or credit. It only helps us decide which answers to use.</p>
+    <p>Did you read the situations and answer the questions carefully? Your answer will <b>not</b> affect your payment or credit. It only helps us decide which answers to use.</p>
     ${[["yes","Yes, I answered carefully"],["no","No, I did not always answer carefully"]].map(([v,t])=>`<label class="radio ${F.careful===v?"on":""}"><input type="radio" name="careful" value="${v}">${t}</label>`).join("")}
     <label class="fl">Optional: any comments about the study?</label>
     <textarea id="cm" rows="3" style="width:100%;font:15px 'IBM Plex Sans';padding:10px;border:1.5px solid var(--line);border-radius:10px">${esc(F.comments||"")}</textarea>
@@ -537,7 +538,7 @@ function debrief(){
   secEl.textContent="Finish";
   app.innerHTML = `<div class="card narrow"><h1>Thank you</h1>
     <p>This study looks at what people do when they are unsure whether their uncertainty comes from missing information or from chance. For example, someone who thinks a problem has a cause that can be found may look for it, while someone who thinks it is down to chance may set up a backup or spread their risk. We also asked how clearly you could tell which of the two it was.</p>
-    <p>The situation you read was made up for this study. There were no right or wrong answers.</p>
+    <p>The situations you read were made up for this study. There were no right or wrong answers.</p>
     <p class="small">Please click below to save your answers.</p>
     <div class="err" id="err"></div><div class="btnrow"><button class="primary" id="b">Submit and finish</button></div></div>`;
   const b=document.getElementById("b");
@@ -567,7 +568,7 @@ async function submit(){
     attention_pass: attn ? attn.attn_pass===1 : null,
     answers: S.answers,
     meta: { started:S.started, total_ms: Date.now()-S.t0, timing:S.timing, events:S.events,
-            mu_order:S.mu_order, ab_order:S.ab_order, ab_left:S.ab_left, attn_pos:S.attn_pos, nfc_order:S.nfc_order,
+            mu_order:S.mu_order, ab_order:S.ab_order, ab_left:S.ab_left, attn_sit:S.attn_sit, attn_pos:S.attn_pos, nfc_order:S.nfc_order,
             ua:navigator.userAgent, screen:[screen.width,screen.height], viewport:[innerWidth,innerHeight],
             device: /iPad|Tablet/i.test(navigator.userAgent)?"tablet":(/Mobi|Android|iPhone/i.test(navigator.userAgent)?"phone":"desktop") }
   };
