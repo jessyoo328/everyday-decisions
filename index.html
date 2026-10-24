@@ -107,7 +107,7 @@ label.fl{display:block;font-weight:600;margin:18px 0 8px}
 <script>
 /* ======================= CONFIG ======================= */
 const CONFIG = {
-  STUDY_VERSION: "s2-4.0.0",
+  STUDY_VERSION: "s2-4.1.0",
   SUPABASE_URL: "https://zwipeiluipgwqrgbmncc.supabase.co",
   SUPABASE_KEY: "sb_publishable_tOpJrlMKyh4KHuML2CEbbw_Z0Cam54c",   // publishable key: insert-only by RLS
   TABLE: "study2_responses",
@@ -329,7 +329,7 @@ const NS = S.scenario_order.length;
 const QS = ["ab","mu","lean"];                                   // what they would do first, then MU, then lean
 const FLOW = [
   {kind:"consent"}, {kind:"about"},
-  ...S.scenario_order.flatMap((sid,pos)=>[{kind:"intro", sid, pos}, ...QS.map((k,i)=>({kind:"q", sid, pos, q:k, qi:i}))]),
+  ...S.scenario_order.flatMap((sid,pos)=>[{kind:"intro", sid, pos}, ...QS.flatMap((k,i)=> k==="ab" ? [0,1,2,3].map(n=>({kind:"q", sid, pos, q:k, qi:i, n})) : [{kind:"q", sid, pos, q:k, qi:i}])]),   // A/B: one choice per screen
   {kind:"nfc"}, {kind:"demo"}, {kind:"final"}, {kind:"debrief"}, {kind:"done"}
 ];
 
@@ -340,7 +340,7 @@ let tScreen = Date.now();
 
 function go(n){
   const cur = FLOW[S.step];
-  const key = cur.kind + (cur.sid?("_"+cur.sid):"") + (cur.q?("_"+cur.q):"");
+  const key = cur.kind + (cur.sid?("_"+cur.sid):"") + (cur.q?("_"+cur.q):"") + (cur.n!=null?(cur.n+1):"");
   S.timing[key] = (S.timing[key]||0) + (Date.now()-tScreen);
   S.step = n; save(); render(); window.scrollTo(0,0);
 }
@@ -415,7 +415,7 @@ function question(st){
   const A = ansFor(st.sid); A.position = st.pos+1;
   secEl.textContent="The situation";
   const dots = QS.map((_,i)=>`<span class="${i<=st.qi?"on":""}"></span>`).join("");
-  const head = `<div class="qhead">Part ${st.qi+1} of ${QS.length}</div><div class="dots">${dots}</div>`;
+  const head = `<div class="qhead">Part ${st.qi+1} of ${QS.length}${st.q==="ab"?` \u00b7 Question ${st.n+1} of 4`:""}</div><div class="dots">${dots}</div>`;
   let inner = "", ok = ()=>true, wide = false;
 
   if(st.q==="mu"){
@@ -432,13 +432,11 @@ function question(st){
                return all; };
   }
   if(st.q==="ab"){
-    inner = `<div class="q" style="font-size:17px">${esc(sc.ab_lead)}</div>` + S.ab_order[st.sid].map((j,n)=>{
-      const it = sc.ab[j-1], first = S.ab_left[st.sid][j-1], second = first==="E"?"A":"E", key="ab"+j;
-      const o = (code,lab)=>`<label class="opt ${A[key+"_choice"]===code?"on":""}" data-k="${key}" data-c="${code}"><input type="radio" name="${key}" value="${code}"><div class="lab">${lab}</div><div class="tx">${esc(it[code])}</div></label>`;
-      return `<div class="abitem" data-k="${key}"><div class="ablab">${n+1}. ${esc(it.label)}</div>${o(first,"A")}${o(second,"B")}</div>`;
-    }).join("");
-    ok = ()=>{ let all=true; [1,2,3,4].forEach(j=>{ const el=document.querySelector(`.abitem[data-k="ab${j}"]`);
-               if(A["ab"+j+"_choice"]==null){all=false; el.classList.add("miss");} else el.classList.remove("miss"); }); return all; };
+    const j = S.ab_order[st.sid][st.n];
+    const it = sc.ab[j-1], first = S.ab_left[st.sid][j-1], second = first==="E"?"A":"E", key="ab"+j;
+    const o = (code,lab)=>`<label class="opt ${A[key+"_choice"]===code?"on":""}" data-k="${key}" data-c="${code}"><input type="radio" name="${key}" value="${code}"><div class="lab">${lab}</div><div class="tx">${esc(it[code])}</div></label>`;
+    inner = `<div class="q" style="font-size:17px">${esc(sc.ab_lead)}</div><div class="abitem" data-k="${key}"><div class="ablab">${esc(it.label)}</div>${o(first,"A")}${o(second,"B")}</div>`;
+    ok = ()=>{ const el=document.querySelector(`.abitem[data-k="${key}"]`); if(A[key+"_choice"]==null){ el.classList.add("miss"); return false; } el.classList.remove("miss"); return true; };
   }
   if(st.q==="lean"){
     inner = `<div class="q">Overall, does your uncertainty about ${esc(sc.lean_target)} come more from missing information or more from chance?</div>
@@ -458,7 +456,7 @@ function question(st){
       A[k+"_choice"]=lb.dataset.c; A[k]= lb.dataset.c==="A"?1:0; save(); });
 
   document.getElementById("b").onclick=()=>{
-    softGo(ok(), st.q==="mu" ? "Some rows are not answered yet." : (st.q==="ab" ? "Some questions are not answered yet." : "You have not answered this question yet."));
+    softGo(ok(), st.q==="mu" ? "Some rows are not answered yet." : (st.q==="ab" ? "You have not chosen an option yet." : "You have not answered this question yet."));
   };
 }
 
