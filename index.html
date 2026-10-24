@@ -103,7 +103,7 @@ label.fl{display:block;font-weight:600;margin:18px 0 8px}
 <script>
 /* ======================= CONFIG ======================= */
 const CONFIG = {
-  STUDY_VERSION: "s2-1.0.0",
+  STUDY_VERSION: "s2-1.1.0",
   SUPABASE_URL: "https://zwipeiluipgwqrgbmncc.supabase.co",
   SUPABASE_KEY: "sb_publishable_tOpJrlMKyh4KHuML2CEbbw_Z0Cam54c",   // publishable key: insert-only by RLS
   TABLE: "study2_responses",
@@ -116,44 +116,44 @@ const CONFIG = {
 const SCENARIOS = [
  { id:"laptop", tag:"Technology", title:"Your laptop before a big presentation",
    body:[
-    "You have an important presentation tomorrow morning, and you will present from your own laptop. Lately it has been unreliable. Some days it starts quickly and runs smoothly. Other days it is slow, and last week the presentation software crashed once, then worked fine the next day.",
-    "Some people say problems like this always have a specific cause, such as a setting or a background program, that can be found and fixed. Others say laptops sometimes just act up for no clear reason."],
-   now:"You have about one hour tonight to deal with it.",
-   E:"Spend the hour tracking down what is causing the problem and fixing it.",
+    "You have an important presentation tomorrow morning, and you will present from your own laptop. Lately it has been unreliable. Some days it runs smoothly. Other days it is slow, and last week the presentation software crashed once, then worked fine the next day.",
+    "Some people say problems like this have a specific cause, such as a setting or a background program, that can be found and fixed. Others say laptops sometimes act up by chance, for no reason anyone can find."],
+   now:"You have one hour tonight, and each option below takes about an hour.",
+   E:"Spend the hour finding out what is causing the problem and fixing it.",
    A:"Spend the hour setting up a backup: put the presentation on a USB drive and on a second device.",
    know:"How much do you know about how laptops work?" },
- { id:"ai_image", tag:"AI tools", title:"An AI image generator",
+ { id:"ai_image", tag:"AI tools", title:"Making an image with AI",
    body:[
-    "You need an image for a class or work project, and you are using an AI image generator. Sometimes it produces almost exactly what you describe. Other times, with a very similar prompt, it misses key details or comes out distorted.",
-    "Some guides say the results depend on writing the prompt the right way, which is a skill you can learn. Others say these tools have built-in randomness, so the same prompt can give very different images."],
-   now:"You have about 20 minutes to get a usable image.",
-   E:"Spend the time working out the exact wording of one carefully written prompt.",
-   A:"Spend the time generating many images from similar prompts, then pick the best one.",
-   know:"How much do you know about using AI image generators?" },
- { id:"invest", tag:"Money", title:"Investing a bonus",
+    "You need an image for a project, and you are using an AI image tool. Sometimes it gives you almost exactly what you describe. Other times, with a very similar description, it misses key details or looks wrong.",
+    "Some people say the results depend on how you word the request, which you can learn to do well. Others say these tools give different results by chance, even for the same request."],
+   now:"You have 20 minutes to get a usable image, and each option below takes about that long.",
+   E:"Spend the time working out the best wording for one carefully written request.",
+   A:"Spend the time making many images from similar requests, then pick the best one.",
+   know:"How much do you know about using AI image tools?" },
+ { id:"commute", tag:"Travel", title:"Getting to a job interview on time",
    body:[
-    "You just received a $2,000 bonus and want to invest it in the stock market for the next year. Stock prices go up and down from month to month.",
-    "Some analysts say prices follow company performance and economic trends, so careful research can tell you which stocks will do well. Others say prices move with news and investor mood in ways no one can predict."],
-   now:"You are deciding how to invest the $2,000.",
-   E:"Research companies and put the money into the one or two stocks you think will do best.",
-   A:"Put the money into a broad index fund that spreads it across hundreds of stocks.",
-   know:"How much do you know about investing in stocks?" },
- { id:"delivery", tag:"Food delivery", title:"Dinner before a meeting",
+    "You have a job interview tomorrow at 9:00 a.m. across town, and you will drive. You have driven this route at that time of day before. Some days it took 25 minutes. Other days it took 45 minutes.",
+    "Some people say travel times have specific causes, such as certain days, traffic lights, or routes, that you can figure out. Others say how traffic moves on any given morning comes down to chance."],
+   now:"You are planning tonight how to get there on time.",
+   E:"Spend 20 minutes tonight studying traffic patterns and routes to work out exactly when to leave.",
+   A:"Skip the planning and leave 30 minutes earlier than you think you need to.",
+   know:"How much do you know about traffic where you live?" },
+ { id:"baking", tag:"Cooking", title:"Baking bread for a party",
    body:[
-    "You have an online meeting at 7:00 tonight and want to eat before it. You usually order from the same delivery app. Sometimes your food arrives right on time. Other times, with the same restaurant and the same order, it arrives 30 to 40 minutes late.",
-    "Some people say delays have specific causes, such as busy hours at the restaurant or certain routes, that you can find out about. Others say it depends on which driver happens to be free, which is a matter of luck."],
-   now:"You are planning tonight's order.",
-   E:"Look into what causes the delays (busy times, delivery estimates, reviews) and choose the order that should arrive on time.",
-   A:"Place your usual order 40 minutes earlier than you normally would, to leave a buffer.",
-   know:"How much do you know about how food delivery apps work?" },
- { id:"online_order", tag:"Shopping", title:"Reordering something you use every week",
+    "You are bringing homemade bread to a party on Saturday. You have made this bread several times with the same recipe. Sometimes it comes out tall and soft. Other times it comes out flat and dense.",
+    "Some people say baking problems have a specific cause, such as the yeast or the kitchen temperature, that you can figure out. Others say bread turns out differently by chance, even when you do everything the same way."],
+   now:"You have Saturday morning to bake, and each option below takes about that long.",
+   E:"Figure out what went wrong in the flat batches, then bake one loaf carefully.",
+   A:"Bake two loaves the usual way, so that at least one is likely to turn out well.",
+   know:"How much do you know about baking?" },
+ { id:"job_apps", tag:"Work", title:"Applying for jobs",
    body:[
-    "You regularly buy a product you use every week, such as printer ink or contact lens solution, from an online seller. Most orders arrive fine, but about one in four has arrived damaged or missing an item.",
-    "Some people say problems like this have a specific cause, such as a particular warehouse or packaging method, that you could find out. Others say shipping problems happen at random, whatever the seller does."],
-   now:"You need to place your next order, and you cannot afford to run out.",
-   E:"Contact the seller to find out what went wrong with the bad orders, then order from them.",
-   A:"Split the order between two different sellers, so one bad delivery does not leave you short.",
-   know:"How much do you know about how online orders are shipped?" }
+    "You are looking for a new job and have sent out several applications. Some of them led to an interview. Others, for very similar jobs, got no reply at all.",
+    "Some people say these outcomes have specific causes, such as how your application is written, that you can figure out and fix. Others say hiring depends a lot on chance, such as who happens to read your application."],
+   now:"You have one weekend to spend on applications, and each option below takes about that long.",
+   E:"Get detailed feedback on your application and use it to write one strong application for the job you want most.",
+   A:"Send your current application to many more similar jobs.",
+   know:"How much do you know about how hiring works?" }
 ];
 
 const GRID_ITEMS = [
