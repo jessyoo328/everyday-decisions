@@ -107,7 +107,7 @@ label.fl{display:block;font-weight:600;margin:18px 0 8px}
 <script>
 /* ======================= CONFIG ======================= */
 const CONFIG = {
-  STUDY_VERSION: "s2-4.1.0",
+  STUDY_VERSION: "s2-5.0.0",
   SUPABASE_URL: "https://zwipeiluipgwqrgbmncc.supabase.co",
   SUPABASE_KEY: "sb_publishable_tOpJrlMKyh4KHuML2CEbbw_Z0Cam54c",   // publishable key: insert-only by RLS
   TABLE: "study2_responses",
@@ -274,6 +274,102 @@ const SCENARIOS = [
    lean_target:"how long tomorrow’s drive will take" }
 ];
 
+/* ---- s2-5: three versions per situation (E = missing information, A = chance, MU = mixed views) and two behavior choices ---- */
+const PATCH = {
+ invest: {
+  pre: [],
+  views: {
+   MU: ["Imagine you are considering investing in the stock market. You encounter different perspectives on its predictability.",
+        "Some analyses you read suggest that stock movements, while complex, are largely driven by understandable economic fundamentals and company performance data. These sources imply that with sufficiently detailed research and the right analytical models, future stock prices can often be forecasted with reasonable accuracy.",
+        "However, other analyses you come across emphasize the significant role of unpredictable global events and sudden shifts in collective investor sentiment. These sources suggest that such factors introduce a strong element of chance, meaning stock prices can fluctuate in ways that even the most sophisticated models struggle to consistently predict."],
+   E:  ["Imagine you are considering investing in the stock market. Many financial analysts and experienced investors describe the stock market as a complex system that, while appearing volatile, is ultimately driven by knowable factors.",
+        "They explain that with sufficient research into company fundamentals, industry trends, economic indicators, and advanced analytical models, it is possible to gain a deep understanding and make well-informed predictions about future price movements. According to this view, uncertainty in the market primarily stems from having incomplete information or an imperfect understanding of these underlying drivers. The key to success lies in dedicated research and analysis to uncover the specific insights that can reduce this lack of knowledge and lead to more accurate forecasts."],
+   A:  ["Imagine you are considering investing in the stock market. Many financial analysts and experienced investors describe the stock market as an environment with a significant element of inherent randomness.",
+        "They explain that while you can research companies, countless unpredictable factors like sudden global events, shifts in mass psychology, or even purely chance occurrences mean that short-to-medium term price movements are, for all practical purposes, like a sophisticated game of chance. According to this view, prices fluctuate in ways that no one can consistently predict with high accuracy; it’s about understanding general probabilities and managing risk in a system with built-in unpredictability."]
+  },
+  post: ["Suppose you have $10,000 to invest. As you think about it, you feel uncertain about how your investment will turn out."],
+  ab: [
+   {label:"Additional information",
+    E:"A detailed report from an expert financial analyst focusing on the specific company’s fundamentals, its strategic position in the industry, and a precise forecast for its future value.",
+    A:"A statistical analysis showing how stocks with a similar risk profile have performed historically, including the typical range of returns, the frequency of significant gains or losses, and overall market volatility trends."},
+   {label:"Choosing individual stocks",
+    pre:"Suppose you have decided to put part of the $10,000 into individual stocks. How would you choose them?",
+    E:"Research companies in depth and put that part into the one or two stocks I judge to be the best.",
+    A:"Skip the in-depth research and split that part evenly across ten different companies."}]
+ },
+ ai_image: {
+  pre: ["You’re using a new AI image generator tool. You give it a text prompt describing a specific scene you want it to create, for example, ‘A futuristic cityscape at sunset with flying cars and glowing neon signs.’",
+        "Sometimes, the AI generates an image that is incredibly close to what you imagined – detailed, creative, and capturing the mood perfectly. Other times, using a very similar prompt, or even the exact same prompt again, it produces images that are quite different, missing key elements you described, looking distorted, or having a completely unexpected style. There doesn’t seem to be an obvious reason for why it’s sometimes so accurate and other times so off-target, even when your input is consistent."],
+  views: {
+   MU: ["You know these AI models are trained on vast amounts of data and have complex algorithms. Some online guides suggest that mastering ‘prompt engineering’ – learning the very specific keywords, phrases, and parameters the AI understands best – is the key to getting consistently great results. This implies it’s a skill you can develop. However, you’ve also read that these generative AIs have an inherent element of ‘creativity’ or randomness, meaning they might always produce a range of varied outputs even with identical prompts, and that this unpredictability is just part of how they work."],
+   E:  ["You know these AI models are trained on vast amounts of data and have complex algorithms. Experienced users and the tool’s developers agree that the results depend on how the prompt is written: once you master ‘prompt engineering’ – learning the very specific keywords, phrases, and parameters the AI understands best – you can get consistently great results. According to this view, the inconsistent images come from not yet knowing the right way to ask, and this is a skill you can develop."],
+   A:  ["You know these AI models are trained on vast amounts of data and have complex algorithms. Experienced users and the tool’s developers agree that these generative AIs have a built-in element of randomness: each time a prompt is run, the AI starts from a different random point, so even identical prompts produce a range of varied outputs. According to this view, the inconsistent images are not caused by how the prompt is written; this unpredictability is just part of how the tool works."]
+  },
+  post: ["So, as you think about trying to generate another specific image, you’re feeling quite uncertain about whether the AI will actually produce the kind of image you’re hoping for this time."],
+  ab: [
+   {label:"Additional information",
+    E:"A detailed guide explaining exactly which keywords, phrases, and settings this AI responds to, so I can write the right prompt.",
+    A:"A gallery of 50 images other people got from prompts like mine, so I can see the range of results the AI tends to produce."},
+   {label:"Strategy for getting the image you want",
+    E:"I would systematically tweak my prompt, word by word, parameter by parameter, trying to converge on the one image I have in mind.",
+    A:"I would generate a larger number of images with similar prompts and then pick the one that comes closest to what I want."}]
+ },
+ juice: {
+  pre: ["You’re at a local café you visit occasionally. They have a sign advertising ‘Freshly Squeezed Orange Juice – Made Today!’ You’ve ordered it a few times before.",
+        "Sometimes, the orange juice tastes amazing – bright, sweet, and clearly very fresh. Other times, it tastes a bit dull, watery, or like it might not be as fresh as advertised, even though the sign is still up and they say it’s made fresh daily. There doesn’t seem to be a pattern to when it’s good versus when it’s disappointing."],
+  views: {
+   MU: ["You know that ‘freshly squeezed’ can mean different things at different places – some might squeeze it right before your eyes, others might mean it was squeezed that morning from a particular batch of oranges which can vary in quality. You also know that taste can be subjective or affected by small things."],
+   E:  ["A friend who used to work at this café told you that the quality depends on specific, knowable things: which supplier’s oranges arrived that day, how long ago the juice was squeezed, and which staff member made it. According to your friend, if you know these details, you can tell in advance whether today’s juice will be good."],
+   A:  ["A friend who used to work at this café told you that the quality depends mainly on the oranges themselves, which vary naturally in sweetness and ripeness in ways no one can see from the outside. According to your friend, even the staff cannot tell in advance whether a batch will be good; it is a matter of chance each day."]
+  },
+  post: ["Today, you’re thinking of ordering it again, but as you look at the sign, you’re feeling quite uncertain about whether the orange juice you get this time will be the amazing kind or the disappointing kind."],
+  ab: [
+   {label:"Information gathering before ordering",
+    E:"I would ask the staff specific questions about today’s batch of oranges or exactly when this juice was made, to find out if it’s good right now.",
+    A:"I would think about my past experiences – how many times it has been good versus bad – to get a sense of the general odds of it being good today."},
+   {label:"How to order",
+    E:"Ask to taste a small sample of today’s juice first, and order a large one if it’s good.",
+    A:"Order a small size without tasting, so a disappointing glass costs less."}]
+ },
+ sleep: {
+  pre: ["You have a big day tomorrow, and you want a good night’s sleep tonight. For the past few weeks, you have kept the same bedtime routine.",
+        "Some nights, you fall asleep quickly and wake up feeling refreshed. Other nights, with the same routine, you lie awake for a long time and wake up tired. There doesn’t seem to be an obvious pattern to which nights go well."],
+  views: {
+   MU: ["Some articles you have read say that poor sleep always has specific causes – like caffeine, screen time, or room temperature – that you can find and fix with the right information. Others say that sleep quality naturally varies from night to night in ways that no one can fully control."],
+   E:  ["Sleep experts you have read agree that poor sleep always has specific causes – like caffeine, screen time, or room temperature – that you can find and fix with the right information. According to this view, your bad nights happen for reasons you have not identified yet."],
+   A:  ["Sleep experts you have read agree that sleep quality naturally varies from night to night, even with a perfect routine, in ways that no one can fully control or predict. According to this view, your bad nights are mostly a matter of chance."]
+  },
+  post: ["So, as you think about tonight, you’re feeling quite uncertain about whether you will sleep well."],
+  ab: [
+   {label:"Information seeking",
+    E:"I would track specific things each night – caffeine, screen time, room temperature – to pinpoint exactly what is disturbing my sleep.",
+    A:"I would look at how common occasional bad nights are for most people, to understand the general range of normal sleep."},
+   {label:"Preparing for tomorrow",
+    E:"Spend this evening getting my routine exactly right: no screens, a cool room, and no caffeine after noon.",
+    A:"Move tomorrow’s most important task from first thing in the morning to the afternoon, in case I sleep badly."}]
+ },
+ commute: {
+  pre: ["You have a job interview tomorrow at 9:00 a.m. across town, and you will drive there. You have driven this route at that time of day several times before.",
+        "Some mornings, the drive took 25 minutes. Other mornings, leaving at the same time, it took 45 minutes. There doesn’t seem to be an obvious pattern to which mornings are slow."],
+  views: {
+   MU: ["Some people say slow mornings have specific causes – like certain days of the week, roadwork, or particular traffic lights – that you can figure out with the right information. Others say that morning traffic varies by chance in ways that no one can predict."],
+   E:  ["Traffic experts agree that slow mornings have specific causes – like certain days of the week, roadwork, or particular traffic lights – that you can figure out with the right information. According to this view, the drive time can be predicted if you check the right sources."],
+   A:  ["Traffic experts agree that morning traffic varies by chance – small random events, like one slow driver or a minor accident, ripple through traffic in ways no one can predict. According to this view, the drive time is mostly a matter of luck."]
+  },
+  post: ["So, as you plan for tomorrow, you’re feeling quite uncertain about how long the drive will take."],
+  ab: [
+   {label:"Information seeking",
+    E:"I would look up roadwork, traffic reports, and route options for tomorrow morning to pinpoint the best time and route.",
+    A:"I would think back on how often the drive has been slow before, to get a sense of the general odds of a delay."},
+   {label:"Planning the drive",
+    E:"Spend 20 minutes tonight checking tomorrow’s roadwork and traffic forecasts, and leave at the time they suggest.",
+    A:"Skip the checking and simply leave 20 minutes earlier than usual."}]
+ }
+};
+SCENARIOS.forEach(s => Object.assign(s, PATCH[s.id]));
+const VERSIONS = ["E","A","MU"];
+function bodyFor(sc, v){ return [...sc.pre, ...sc.views[v], ...sc.post]; }
+
 const ATTN = {k:"attn", t:"To show you are reading, please select “Disagree” in this row.", want:2};
 const LIK7 = ["Strongly disagree","Disagree","Somewhat disagree","Neither","Somewhat agree","Agree","Strongly agree"];
 
@@ -298,7 +394,7 @@ const LIK6 = ["Strongly disagree","Moderately disagree","Slightly disagree","Sli
 
 /* ======================= STATE ======================= */
 const qs = new URLSearchParams(location.search);
-const KEY = "mus2_state_v4";
+const KEY = "mus2_state_v5";
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 let S;
 try{ S = JSON.parse(sessionStorage.getItem(KEY)||"null"); }catch(e){ S=null; }
@@ -314,9 +410,11 @@ if(!S){
     is_test: qs.get("test")==="1",
     measure_order: "ab_mu_lean", scenario_order: order,
     mu_order: per(()=>shuffle([1,2,3,4,5,6,7])),
+    version: (()=>{ const v = shuffle([...VERSIONS, VERSIONS[Math.floor(Math.random()*3)], VERSIONS[Math.floor(Math.random()*3)]]);   // each person gets at least one E, one A, one MU
+      const f = qs.get("v"); return Object.fromEntries(order.map((id,i)=>[id, VERSIONS.includes(f) ? f : v[i]])); })(),   // ?v=E|A|MU for testing only
     attn_sit: 2, attn_pos: Math.floor(Math.random()*8),         // attention row sits in the MU grid of the 3rd situation
-    ab_order: per(()=>shuffle([1,2,3,4])),
-    ab_left: per(()=>[1,2,3,4].map(()=>Math.random()<.5?"E":"A")),
+    ab_order: per(()=>shuffle([1,2])),
+    ab_left: per(()=>[1,2].map(()=>Math.random()<.5?"E":"A")),
     nfc_order: shuffle(NFC.map((_,i)=>i)),
     answers:{ scenarios:{}, nfc:{}, demo:{}, final:{} },
     timing:{}, events:{resumes:0, blur:0, back:0}
@@ -329,7 +427,7 @@ const NS = S.scenario_order.length;
 const QS = ["ab","mu","lean"];                                   // what they would do first, then MU, then lean
 const FLOW = [
   {kind:"consent"}, {kind:"about"},
-  ...S.scenario_order.flatMap((sid,pos)=>[{kind:"intro", sid, pos}, ...QS.flatMap((k,i)=> k==="ab" ? [0,1,2,3].map(n=>({kind:"q", sid, pos, q:k, qi:i, n})) : [{kind:"q", sid, pos, q:k, qi:i}])]),   // A/B: one choice per screen
+  ...S.scenario_order.flatMap((sid,pos)=>[{kind:"intro", sid, pos}, ...QS.flatMap((k,i)=> k==="ab" ? [0,1].map(n=>({kind:"q", sid, pos, q:k, qi:i, n})) : [{kind:"q", sid, pos, q:k, qi:i}])]),   // A/B: one choice per screen
   {kind:"nfc"}, {kind:"demo"}, {kind:"final"}, {kind:"debrief"}, {kind:"done"}
 ];
 
@@ -397,7 +495,7 @@ function about(){
 
 function scenarioCard(sc, pos){
   return `<div class="card scn"><div class="qhead">Situation ${pos+1} of ${NS}</div><div class="tag">${esc(sc.tag)}</div>
-    <h2>${esc(sc.title)}</h2>${sc.body.map(p=>`<p>${esc(p)}</p>`).join("")}</div>`;
+    <h2>${esc(sc.title)}</h2>${bodyFor(sc, S.version[sc.id]).map(p=>`<p>${esc(p)}</p>`).join("")}</div>`;
 }
 
 function intro(st){
@@ -412,10 +510,10 @@ function ansFor(sid){ return S.answers.scenarios[sid] || (S.answers.scenarios[si
 
 function question(st){
   const sc = SCENARIOS.find(s=>s.id===st.sid);
-  const A = ansFor(st.sid); A.position = st.pos+1;
+  const A = ansFor(st.sid); A.position = st.pos+1; A.version = S.version[st.sid];
   secEl.textContent="The situation";
   const dots = QS.map((_,i)=>`<span class="${i<=st.qi?"on":""}"></span>`).join("");
-  const head = `<div class="qhead">Part ${st.qi+1} of ${QS.length}${st.q==="ab"?` \u00b7 Question ${st.n+1} of 4`:""}</div><div class="dots">${dots}</div>`;
+  const head = `<div class="qhead">Part ${st.qi+1} of ${QS.length}${st.q==="ab"?` \u00b7 Question ${st.n+1} of 2`:""}</div><div class="dots">${dots}</div>`;
   let inner = "", ok = ()=>true, wide = false;
 
   if(st.q==="mu"){
@@ -435,7 +533,7 @@ function question(st){
     const j = S.ab_order[st.sid][st.n];
     const it = sc.ab[j-1], first = S.ab_left[st.sid][j-1], second = first==="E"?"A":"E", key="ab"+j;
     const o = (code,lab)=>`<label class="opt ${A[key+"_choice"]===code?"on":""}" data-k="${key}" data-c="${code}"><input type="radio" name="${key}" value="${code}"><div class="lab">${lab}</div><div class="tx">${esc(it[code])}</div></label>`;
-    inner = `<div class="q" style="font-size:17px">${esc(sc.ab_lead)}</div><div class="abitem" data-k="${key}"><div class="ablab">${esc(it.label)}</div>${o(first,"A")}${o(second,"B")}</div>`;
+    inner = `<div class="q" style="font-size:17px">${esc(sc.ab_lead)}</div><div class="abitem" data-k="${key}"><div class="ablab">${esc(it.pre||it.label)}</div>${o(first,"A")}${o(second,"B")}</div>`;
     ok = ()=>{ const el=document.querySelector(`.abitem[data-k="${key}"]`); if(A[key+"_choice"]==null){ el.classList.add("miss"); return false; } el.classList.remove("miss"); return true; };
   }
   if(st.q==="lean"){
@@ -536,7 +634,7 @@ function debrief(){
   secEl.textContent="Finish";
   app.innerHTML = `<div class="card narrow"><h1>Thank you</h1>
     <p>This study looks at what people do when they are unsure whether their uncertainty comes from missing information or from chance. For example, someone who thinks a problem has a cause that can be found may look for it, while someone who thinks it is down to chance may set up a backup or spread their risk. We also asked how clearly you could tell which of the two it was.</p>
-    <p>The situations you read were made up for this study. There were no right or wrong answers.</p>
+    <p>The situations you read were made up for this study, including what experts, articles, or other people were described as saying. Some situations described the uncertainty as coming from missing information, some as coming from chance, and some gave both views. There were no right or wrong answers.</p>
     <p class="small">Please click below to save your answers.</p>
     <div class="err" id="err"></div><div class="btnrow"><button class="primary" id="b">Submit and finish</button></div></div>`;
   const b=document.getElementById("b");
@@ -566,7 +664,7 @@ async function submit(){
     attention_pass: attn ? attn.attn_pass===1 : null,
     answers: S.answers,
     meta: { started:S.started, total_ms: Date.now()-S.t0, timing:S.timing, events:S.events,
-            mu_order:S.mu_order, ab_order:S.ab_order, ab_left:S.ab_left, attn_sit:S.attn_sit, attn_pos:S.attn_pos, nfc_order:S.nfc_order,
+            mu_order:S.mu_order, ab_order:S.ab_order, ab_left:S.ab_left, version:S.version, attn_sit:S.attn_sit, attn_pos:S.attn_pos, nfc_order:S.nfc_order,
             ua:navigator.userAgent, screen:[screen.width,screen.height], viewport:[innerWidth,innerHeight],
             device: /iPad|Tablet/i.test(navigator.userAgent)?"tablet":(/Mobi|Android|iPhone/i.test(navigator.userAgent)?"phone":"desktop") }
   };
