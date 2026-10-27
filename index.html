@@ -107,7 +107,7 @@ label.fl{display:block;font-weight:600;margin:18px 0 8px}
 <script>
 /* ======================= CONFIG ======================= */
 const CONFIG = {
-  STUDY_VERSION: "s2-6.0.0",
+  STUDY_VERSION: "s2-6.1.0",
   SUPABASE_URL: "https://zwipeiluipgwqrgbmncc.supabase.co",
   SUPABASE_KEY: "sb_publishable_tOpJrlMKyh4KHuML2CEbbw_Z0Cam54c",   // publishable key: insert-only by RLS
   TABLE: "study2_responses",
@@ -357,7 +357,7 @@ const PATCH = {
 SCENARIOS.forEach(s => Object.assign(s, PATCH[s.id]));
 function bodyFor(sc){ return [...sc.pre, ...sc.views.MU, ...sc.post]; }
 
-const ATTN = {k:"attn", t:"To show you are reading, please select “Disagree” in this row.", want:2};
+const ATTN = {k:"attn", t:"To show you are reading, please select “Disagree” for this question.", want:2};   // separate screen after the 3rd situation
 const LIK7 = ["Strongly disagree","Disagree","Somewhat disagree","Neither","Somewhat agree","Agree","Strongly agree"];
 
 const NFC = [ // Need for Closure Scale, 15-item short form (Roets & Van Hiel, 2011), verbatim
@@ -381,7 +381,7 @@ const LIK6 = ["Strongly disagree","Moderately disagree","Slightly disagree","Sli
 
 /* ======================= STATE ======================= */
 const qs = new URLSearchParams(location.search);
-const KEY = "mus2_state_v6";
+const KEY = "mus2_state_v61";
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 let S;
 try{ S = JSON.parse(sessionStorage.getItem(KEY)||"null"); }catch(e){ S=null; }
@@ -397,7 +397,7 @@ if(!S){
     is_test: qs.get("test")==="1",
     measure_order: "ab_mu_lean", scenario_order: order,
     mu_order: per(()=>shuffle([1,2,3,4,5,6,7])),
-    attn_sit: 2, attn_pos: Math.floor(Math.random()*8),         // attention row sits in the MU grid of the 3rd situation
+    attn_sit: 2,         // attention-check question comes after the 3rd situation
     ab_order: per(()=>shuffle([1,2])),
     ab_left: per(()=>[1,2].map(()=>Math.random()<.5?"E":"A")),
     nfc_order: shuffle(NFC.map((_,i)=>i)),
@@ -412,7 +412,7 @@ const NS = S.scenario_order.length;
 const QS = ["ab","mu","lean"];                                   // what they would do first, then MU, then lean
 const FLOW = [
   {kind:"consent"}, {kind:"about"},
-  ...S.scenario_order.flatMap((sid,pos)=>[{kind:"intro", sid, pos}, ...QS.flatMap((k,i)=> k==="ab" ? [0,1].map(n=>({kind:"q", sid, pos, q:k, qi:i, n})) : [{kind:"q", sid, pos, q:k, qi:i}])]),   // A/B: one choice per screen
+  ...S.scenario_order.flatMap((sid,pos)=>[{kind:"intro", sid, pos}, ...QS.flatMap((k,i)=> k==="ab" ? [0,1].map(n=>({kind:"q", sid, pos, q:k, qi:i, n})) : [{kind:"q", sid, pos, q:k, qi:i}]), ...(pos===S.attn_sit ? [{kind:"q", sid, pos, q:"attn", qi:QS.length-1}] : [])]),   // A/B: one choice per screen; attention check after the 3rd situation
   {kind:"nfc"}, {kind:"demo"}, {kind:"final"}, {kind:"debrief"}, {kind:"done"}
 ];
 
@@ -428,9 +428,8 @@ function go(n){
   S.step = n; save(); render(); window.scrollTo(0,0);
 }
 function next(){ go(S.step+1); }
-// Soft prompt: blank answers get one reminder, then the person may continue (the consent letter allows skipping).
 let warned=false;
-function softGo(complete, msg){ if(complete || warned){ warned=false; save(); next(); return; } warned=true; document.getElementById("err").textContent = msg + " If you prefer not to answer, click the button again to continue."; }
+function softGo(complete, msg){ if(complete){ save(); next(); return; } document.getElementById("err").textContent = msg; }   // every question must be answered
 
 function el(html){ const d=document.createElement("div"); d.innerHTML=html.trim(); return d.firstChild; }
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
@@ -498,20 +497,18 @@ function question(st){
   const A = ansFor(st.sid); A.position = st.pos+1;
   secEl.textContent="The situation";
   const dots = QS.map((_,i)=>`<span class="${i<=st.qi?"on":""}"></span>`).join("");
-  const head = `<div class="qhead">Part ${st.qi+1} of ${QS.length}${st.q==="ab"?` \u00b7 Question ${st.n+1} of 2`:""}</div><div class="dots">${dots}</div>`;
+  const head = st.q==="attn" ? `<div class="qhead">One more question</div>` : `<div class="qhead">Part ${st.qi+1} of ${QS.length}${st.q==="ab"?` \u00b7 Question ${st.n+1} of 2`:""}</div><div class="dots">${dots}</div>`;
   let inner = "", ok = ()=>true, wide = false;
 
   if(st.q==="mu"){
     wide = true;
     let rows = S.mu_order[st.sid].map(i=>({k:"mu"+i, t:sc.mu[i-1]}));
-    if(st.pos===S.attn_sit) rows.splice(S.attn_pos, 0, ATTN);
     inner = `<div class="q" style="font-size:17px">${esc(sc.mu_lead)}</div>
      <table class="lik"><tr><th></th>${LIK7.map((l,i)=>`<th>${i+1}<br>${l}</th>`).join("")}</tr>
      ${rows.map(r=>`<tr data-k="${r.k}"><td class="st">${esc(r.t)}</td>${LIK7.map((_,i)=>`<td><input type="radio" name="${r.k}" value="${i+1}" aria-label="${LIK7[i]}" ${A[r.k]==i+1?"checked":""}></td>`).join("")}</tr>`).join("")}
      </table>`;
     ok = ()=>{ let all=true; rows.forEach(r=>{ const v=document.querySelector(`input[name="${r.k}"]:checked`); const tr=document.querySelector(`tr[data-k="${r.k}"]`);
                if(!v){all=false;tr.classList.add("miss")} else {tr.classList.remove("miss"); A[r.k]=+v.value;} });
-               if(A.attn!=null) A.attn_pass = A.attn===ATTN.want ? 1 : 0;
                return all; };
   }
   if(st.q==="ab"){
@@ -520,6 +517,10 @@ function question(st){
     const o = (code,lab)=>`<label class="opt ${A[key+"_choice"]===code?"on":""}" data-k="${key}" data-c="${code}"><input type="radio" name="${key}" value="${code}"><div class="lab">${lab}</div><div class="tx">${esc(it[code])}</div></label>`;
     inner = `<div class="q" style="font-size:17px">${esc(sc.ab_lead)}</div><div class="abitem" data-k="${key}"><div class="ablab">${esc(it.pre||it.label)}</div>${o(first,"A")}${o(second,"B")}</div>`;
     ok = ()=>{ const el=document.querySelector(`.abitem[data-k="${key}"]`); if(A[key+"_choice"]==null){ el.classList.add("miss"); return false; } el.classList.remove("miss"); return true; };
+  }
+  if(st.q==="attn"){
+    inner = `<div class="q">${esc(ATTN.t)}</div>` + LIK7.map((l,i)=>`<label class="radio ${A.attn===i+1?"on":""}"><input type="radio" name="attn" value="${i+1}" ${A.attn===i+1?"checked":""}>${l}</label>`).join("");
+    ok = ()=>{ const v=document.querySelector('input[name="attn"]:checked'); if(!v) return false; A.attn=+v.value; A.attn_pass = A.attn===ATTN.want ? 1 : 0; return true; };
   }
   if(st.q==="lean"){
     inner = `<div class="q">Overall, does your uncertainty about ${esc(sc.lean_target)} come more from missing information or more from chance?</div>
@@ -533,13 +534,14 @@ function question(st){
     <div class="card">${head}${inner}<div class="err" id="err"></div>
     <div class="btnrow"><button class="primary" id="b">Next</button></div></div></div>`;
 
+  if(st.q==="attn") document.querySelectorAll(".radio").forEach(lb=>lb.onclick=()=>{ document.querySelectorAll(".radio").forEach(x=>x.classList.remove("on")); lb.classList.add("on"); lb.querySelector("input").checked=true; });
   if(st.q==="lean") makeSlider(document.getElementById("sl"), A.lean, v=>{A.lean=v; save();}, true);
   if(st.q==="ab") document.querySelectorAll(".opt").forEach(lb=>lb.onclick=()=>{
       const k=lb.dataset.k; document.querySelectorAll(`.opt[data-k="${k}"]`).forEach(x=>x.classList.remove("on")); lb.classList.add("on");
       A[k+"_choice"]=lb.dataset.c; A[k]= lb.dataset.c==="A"?1:0; save(); });
 
   document.getElementById("b").onclick=()=>{
-    softGo(ok(), st.q==="mu" ? "Some rows are not answered yet." : (st.q==="ab" ? "You have not chosen an option yet." : "You have not answered this question yet."));
+    softGo(ok(), st.q==="mu" ? "Please answer every row to continue." : (st.q==="lean" ? "Please click or drag along the line to give your answer." : "Please choose an option to continue."));
   };
 }
 
@@ -573,7 +575,7 @@ function nfc(){
   document.getElementById("b").onclick=()=>{
     let all=true; items.forEach(([k])=>{ const v=document.querySelector(`input[name="${k}"]:checked`); const tr=document.querySelector(`tr[data-k="${k}"]`);
       if(!v){all=false;tr.classList.add("miss")} else {tr.classList.remove("miss"); S.answers.nfc[k]=+v.value;} });
-    softGo(all, "Some rows are not answered yet.");
+    softGo(all, "Please answer every row to continue.");
   };
 }
 
@@ -598,7 +600,7 @@ function demo(){
   document.getElementById("b").onclick=()=>{
     const age=+document.getElementById("age").value; D.education=document.getElementById("edu").value; D.gender_self=document.getElementById("gself").value.slice(0,80);
     if(age>=18 && age<=100) D.age=age;
-    softGo(!!(D.age && D.gender && D.education), "Some questions are not answered yet (age must be 18 to 100).");
+    softGo(!!(D.age && D.gender && D.education && (D.gender!=="self" || D.gender_self.trim())), "Please answer every question to continue (age must be 18 to 100).");
   };
 }
 
@@ -612,7 +614,7 @@ function final(){
     <textarea id="cm" rows="3" style="width:100%;font:15px 'IBM Plex Sans';padding:10px;border:1.5px solid var(--line);border-radius:10px">${esc(F.comments||"")}</textarea>
     <div class="err" id="err"></div><div class="btnrow"><button class="primary" id="b">Continue</button></div></div>`;
   document.querySelectorAll(".radio").forEach(lb=>lb.onclick=()=>{document.querySelectorAll(".radio").forEach(x=>x.classList.remove("on")); lb.classList.add("on"); F.careful=lb.querySelector("input").value; save();});
-  document.getElementById("b").onclick=()=>{ F.comments=document.getElementById("cm").value.slice(0,1000); softGo(!!F.careful, "You have not chosen an answer yet."); };
+  document.getElementById("b").onclick=()=>{ F.comments=document.getElementById("cm").value.slice(0,1000); softGo(!!F.careful, "Please choose an answer to continue."); };
 }
 
 function debrief(){
@@ -649,7 +651,7 @@ async function submit(){
     attention_pass: attn ? attn.attn_pass===1 : null,
     answers: S.answers,
     meta: { started:S.started, total_ms: Date.now()-S.t0, timing:S.timing, events:S.events,
-            mu_order:S.mu_order, ab_order:S.ab_order, ab_left:S.ab_left, attn_sit:S.attn_sit, attn_pos:S.attn_pos, nfc_order:S.nfc_order,
+            mu_order:S.mu_order, ab_order:S.ab_order, ab_left:S.ab_left, attn_sit:S.attn_sit, nfc_order:S.nfc_order,
             ua:navigator.userAgent, screen:[screen.width,screen.height], viewport:[innerWidth,innerHeight],
             device: /iPad|Tablet/i.test(navigator.userAgent)?"tablet":(/Mobi|Android|iPhone/i.test(navigator.userAgent)?"phone":"desktop") }
   };
