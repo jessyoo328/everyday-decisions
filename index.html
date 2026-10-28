@@ -76,6 +76,7 @@ table.lik tr.miss td.st{color:var(--err)}
 .slider .fill{position:absolute;left:0;top:19px;height:6px;border-radius:3px;background:var(--sel)}
 .slider .knob{position:absolute;top:10px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:var(--sel);box-shadow:0 1px 4px rgba(0,0,0,.25)}
 .slider .val{position:absolute;top:-22px;transform:translateX(-50%);font:600 14px "IBM Plex Mono",monospace;color:var(--sel)}
+.ticks{display:flex;justify-content:space-between;font:500 13px "IBM Plex Mono",monospace;color:var(--ink2);margin-top:2px}
 .hint{font-size:13.5px;color:var(--muted);margin-top:14px}
 .err{color:var(--err);font-size:14px;margin-top:12px;min-height:20px}
 /* tiles */
@@ -107,7 +108,7 @@ label.fl{display:block;font-weight:600;margin:18px 0 8px}
 <script>
 /* ======================= CONFIG ======================= */
 const CONFIG = {
-  STUDY_VERSION: "s2-6.1.0",
+  STUDY_VERSION: "s2-6.2.0",
   SUPABASE_URL: "https://zwipeiluipgwqrgbmncc.supabase.co",
   SUPABASE_KEY: "sb_publishable_tOpJrlMKyh4KHuML2CEbbw_Z0Cam54c",   // publishable key: insert-only by RLS
   TABLE: "study2_responses",
@@ -381,7 +382,7 @@ const LIK6 = ["Strongly disagree","Moderately disagree","Slightly disagree","Sli
 
 /* ======================= STATE ======================= */
 const qs = new URLSearchParams(location.search);
-const KEY = "mus2_state_v61";
+const KEY = "mus2_state_v62";
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 let S;
 try{ S = JSON.parse(sessionStorage.getItem(KEY)||"null"); }catch(e){ S=null; }
@@ -525,6 +526,7 @@ function question(st){
   if(st.q==="lean"){
     inner = `<div class="q">Overall, does your uncertainty about ${esc(sc.lean_target)} come more from missing information or more from chance?</div>
       <div class="slider" id="sl"><div class="track"></div><div class="fill" style="width:0"></div></div>
+      <div class="ticks"><span>0</span><span>50</span><span>100</span></div>
       <div class="ends"><span>Entirely missing information</span><span>Entirely chance</span></div>
       <div class="hint">Click or drag along the line to give your answer.</div>`;
     ok = ()=> A.lean!=null;
@@ -535,7 +537,7 @@ function question(st){
     <div class="btnrow"><button class="primary" id="b">Next</button></div></div></div>`;
 
   if(st.q==="attn") document.querySelectorAll(".radio").forEach(lb=>lb.onclick=()=>{ document.querySelectorAll(".radio").forEach(x=>x.classList.remove("on")); lb.classList.add("on"); lb.querySelector("input").checked=true; });
-  if(st.q==="lean") makeSlider(document.getElementById("sl"), A.lean, v=>{A.lean=v; save();}, true);
+  if(st.q==="lean") makeSlider(document.getElementById("sl"), A.lean, v=>{A.lean=v; save();}, false);   // the chosen number shows above the handle
   if(st.q==="ab") document.querySelectorAll(".opt").forEach(lb=>lb.onclick=()=>{
       const k=lb.dataset.k; document.querySelectorAll(`.opt[data-k="${k}"]`).forEach(x=>x.classList.remove("on")); lb.classList.add("on");
       A[k+"_choice"]=lb.dataset.c; A[k]= lb.dataset.c==="A"?1:0; save(); });
